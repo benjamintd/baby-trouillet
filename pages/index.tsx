@@ -1,86 +1,160 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
+import type { NextPage } from "next";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { Submission } from "../models/Submission";
+import { useLocalStorage } from "react-use";
 
 const Home: NextPage = () => {
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "error" | "success"
+  >("idle");
+  const [formState, setFormState] = useState<Partial<Submission>>({});
+  const [recordId, setRecordId] = useLocalStorage("recordId", null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (recordId) {
+      router.replace(`/${recordId}`);
+    }
+  });
+
+  const handleInputChange = (event: any) => {
+    const target = event.target;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+
+    setFormState((state) => ({
+      ...state,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+
+    setStatus("submitting");
+    fetch("/api/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formState),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setStatus("success");
+        setRecordId(data.id);
+      })
+      .catch(() => {
+        setStatus("error");
+      });
+  };
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
+    <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Baby Bensarah</title>
+        <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
+      <main className="flex flex-col items-center justify-center flex-1 w-full px-20 text-center">
+        <h1>Baby Bensarah</h1>
 
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="rounded-md bg-gray-100 p-3 font-mono text-lg">
-            pages/index.tsx
-          </code>
+        <p>
+          Nous attendons avec impatience la naissance de notre bébé. Pour
+          l'occasion, nous avons décidé de faire un petit jeu&nbsp;!
         </p>
 
-        <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and its API.
-            </p>
-          </a>
+        <form className="flex flex-col" onSubmit={handleSubmit}>
+          <select name="Sexe" id="Sexe">
+            <option value="" disabled selected>
+              Select your option
+            </option>
+            <option value="M">un petit garçon</option>
+            <option value="F">une petite fille</option>
+          </select>
 
-          <a
-            href="https://nextjs.org/learn"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
+          <input
+            required
+            type="text"
+            placeholder="Prénom"
+            name="Prénom"
+            autoComplete="off"
+            onChange={handleInputChange}
+          />
 
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
+          <input
+            required
+            type="number"
+            placeholder="Poids"
+            name="Poids"
+            min={0.0}
+            step={0.1}
+            max={10.0}
+            onChange={handleInputChange}
+          />
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+          <select name="Cheveux" id="Cheveux">
+            <option value="" disabled selected>
+              Select your option
+            </option>
+            <option value="Aucun">Aucun</option>
+            <option value="Duvet">Duvet</option>
+            <option value="Cheveux">Cheveux</option>
+          </select>
+
+          <input
+            type="date"
+            required
+            onChange={handleInputChange}
+            name="DateDeNaissance"
+            value="2022-12-15"
+            min="2022-11-01"
+            max="2022-12-31"
+          />
+
+          <input
+            required
+            type="time"
+            id="HeureDeNaissance"
+            name="HeureDeNaissance"
+            min="00:00"
+            max="24:00"
+          />
+
+          <input
+            type="text"
+            placeholder="Nom"
+            name="Nom"
+            autoComplete="name"
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="email"
+            autoComplete="email"
+            name="Email"
+            placeholder="Email"
+            required
+            onChange={handleInputChange}
+          />
+          <textarea
+            placeholder="Adresse"
+            name="Adresse"
+            autoComplete="street-address"
+            required
+            onChange={handleInputChange}
+          />
+
+          <button disabled={status === "submitting"} type="submit">
+            submit
+          </button>
+        </form>
       </main>
-
-      <footer className="flex h-24 w-full items-center justify-center border-t">
-        <a
-          className="flex items-center justify-center gap-2"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-        </a>
-      </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
