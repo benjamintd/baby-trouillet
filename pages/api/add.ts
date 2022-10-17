@@ -17,6 +17,7 @@ export default async function handler(
     Cheveux,
     DateDeNaissance,
     HeureDeNaissance,
+    Taille,
   } = req.body;
 
   const data = await base("Pronos").create([
@@ -29,6 +30,7 @@ export default async function handler(
         Prénom,
         Poids: +Poids,
         Cheveux,
+        Taille: +Taille,
         DateDeNaissance,
         HeureDeNaissance,
       },

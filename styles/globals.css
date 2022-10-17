@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .font-intro {
+    font-family: "Intro", sans-serif;
+  }
+
+  .font-intro-light {
+    font-family: "Intro Light", sans-serif;
+  }
+
+  .font-intro-bold {
+    font-family: "Intro Bold", sans-serif;
+  }
+
+  .input {
+    @apply m-2 text-lg border-none rounded-full font-intro-bold text-cyan-700 ring-1 ring-cyan-700 focus:ring focus:ring-cyan-600;
+  }
+
+  .secondary-input {
+    @apply border-none rounded font-intro-bold text-gray-700 ring-1 ring-gray-700 focus:ring focus:ring-gray-600;
+  }
+}
+
+@font-face {
+  font-family: "Intro";
+  src: url("/fonts/Intro\ Book\ Regular.otf");
+}
+
+@font-face {
+  font-family: "Intro Light";
+  src: url("/fonts/Intro\ Light\ Regular.otf");
+}
+
+@font-face {
+  font-family: "Intro Bold";
+  src: url("/fonts/Intro\ Bold\ Regular.otf");
+}
