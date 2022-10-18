@@ -77,12 +77,14 @@ const Home: NextPage = () => {
         <p className="mb-8 text-lg text-cyan-900">
           Nous attendons avec impatience la naissance de notre bébé. Pour
           l'occasion, nous avons décidé de faire un petit jeu&nbsp;!
+          <br />À la clé, une bouteille de champagne 🍾 et une rencontre
+          exclusive avec l'enfant 🤗.
         </p>
 
         <form onSubmit={handleSubmit}>
-          <div className="w-full max-w-3xl p-6 text-lg font-bold text-gray-900 bg-white border rounded shadow-lg">
-            <div className="flex flex-col items-baseline justify-between sm:flex-row">
-              <p>Je pense que le bébé sera</p>
+          <div className="w-full max-w-5xl p-6 text-base font-bold text-left text-gray-900 bg-white border rounded shadow md:text-lg shadow-teal-900/20">
+            <p className="mb-4">
+              Je pense que le bébé sera{" "}
               <select
                 onChange={handleInputChange}
                 className="input"
@@ -94,12 +96,10 @@ const Home: NextPage = () => {
                 </option>
                 <option value="M">un petit garçon</option>
                 <option value="F">une petite fille</option>
-              </select>
-            </div>
-            <div className="flex flex-col items-baseline justify-between sm:flex-row">
-              <p> qui s'appellera</p>
+              </select>{" "}
+              qui s'appellera{" "}
               <input
-                className="input"
+                className="w-40 input"
                 required
                 type="text"
                 placeholder="Prénom"
@@ -107,45 +107,39 @@ const Home: NextPage = () => {
                 autoComplete="off"
                 onChange={handleInputChange}
               />
-            </div>
-            <div className="flex flex-col items-baseline justify-between sm:flex-row">
-              <p>qui pèsera</p>
-              <span className="font-mono font-light">
-                <input
-                  className="w-24 input"
-                  required
-                  type="number"
-                  placeholder="Poids"
-                  name="Poids"
-                  min={0.0}
-                  step="any"
-                  lang="fr"
-                  max={10.0}
-                  onChange={handleInputChange}
-                />{" "}
-                kg&nbsp;
-              </span>
-            </div>
-            <div className="flex flex-col items-baseline justify-between sm:flex-row">
-              <p>et qui mesurera</p>
-              <span className="font-mono font-light">
-                <input
-                  lang="fr"
-                  className="w-24 input"
-                  required
-                  type="number"
-                  placeholder="Taille"
-                  name="Taille"
-                  min={0}
-                  step={1}
-                  max={100}
-                  onChange={handleInputChange}
-                />{" "}
-                cm.
-              </span>
-            </div>
-            <div className="flex flex-col items-baseline justify-between sm:flex-row">
-              <p>{formState.Sexe === "F" ? "Elle" : "Il"} aura une tête</p>
+              .
+            </p>
+            <p className="mb-4">
+              {formState.Sexe === "F" ? "Elle" : "Il"} pèsera{" "}
+              <input
+                className="w-24 input"
+                required
+                type="number"
+                placeholder="Poids"
+                name="Poids"
+                min={0.0}
+                step={0.01}
+                lang="fr"
+                max={10.0}
+                onChange={handleInputChange}
+              />{" "}
+              kilos et mesurera{" "}
+              <input
+                lang="fr"
+                className="w-24 input"
+                required
+                type="number"
+                placeholder="Taille"
+                name="Taille"
+                min={0}
+                step={1}
+                max={100}
+                onChange={handleInputChange}
+              />{" "}
+              centimètres.
+            </p>
+            <p className="mb-4">
+              {formState.Sexe === "F" ? "Elle" : "Il"} aura une tête{" "}
               <select
                 onChange={handleInputChange}
                 className="input"
@@ -159,9 +153,10 @@ const Home: NextPage = () => {
                 <option value="Duvet">duveteuse</option>
                 <option value="Cheveux">chevelue</option>
               </select>
-            </div>
-            <div className="flex flex-col items-baseline justify-between sm:flex-row">
-              <p>{formState.Sexe === "F" ? "Elle" : "Il"} naîtra le</p>
+              .
+            </p>
+            <p className="mb-4">
+              {formState.Sexe === "F" ? "Elle" : "Il"} naîtra le
               <span className="text-left">
                 <input
                   className="input"
@@ -186,7 +181,7 @@ const Home: NextPage = () => {
                 />
                 .
               </span>
-            </div>
+            </p>
           </div>
           <div className="mb-12">
             <div className="grid grid-cols-2 gap-6">
