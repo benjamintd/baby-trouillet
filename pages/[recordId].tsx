@@ -2,17 +2,18 @@ import Airtable from "airtable";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useLocalStorage } from "react-use";
+import { useCookie, useLocalStorage } from "react-use";
 import { Submission } from "../models/Submission";
 
 const Page = ({ record }: { record: Submission }) => {
-  const [_a, _b, restart] = useLocalStorage("recordId", null);
+  const [_recordId, _setRecordId, restart] = useCookie("recordId");
   const router = useRouter();
 
   const replay = () => {
     restart();
     router.push("/");
   };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-pink-50 bg-gradient-to-br to-blue-50">
       <Head>
@@ -78,6 +79,13 @@ const Page = ({ record }: { record: Submission }) => {
             Rejouer
           </button>
         </p>
+
+        <a
+          className="mt-12 button"
+          href="https://bientot9mois.fr/liste-naissance/ef1a218c-4a2f-4a91-b621-796ec909d7a4"
+        >
+          Voir la liste de naissance
+        </a>
       </main>
     </div>
   );
@@ -90,7 +98,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const { recordId } = context.query;
   const rec = await base.table("Pronos").find(recordId as string);
-  console.log(rec, rec.fields);
+
   return {
     props: {
       record: JSON.parse(JSON.stringify(rec.fields)),

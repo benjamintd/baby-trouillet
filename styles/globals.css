@@ -16,11 +16,15 @@
   }
 
   .input {
-    @apply m-2 text-lg border-none rounded-full font-intro-bold text-cyan-700 ring-1 ring-cyan-700 focus:ring focus:ring-cyan-600;
+    @apply my-2 text-lg border-none rounded-full font-intro-bold text-cyan-700 ring-1 ring-cyan-700 focus:ring focus:ring-cyan-600;
   }
 
   .secondary-input {
     @apply border-none rounded font-intro-bold text-gray-700 ring-1 ring-gray-700 focus:ring focus:ring-gray-600;
+  }
+
+  .button {
+    @apply px-10 py-4 text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-pink-800 to-blue-800 font-intro-bold;
   }
 }
 

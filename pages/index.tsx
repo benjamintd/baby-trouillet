@@ -3,14 +3,16 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { Submission } from "../models/Submission";
-import { useLocalStorage } from "react-use";
+import { useCookie } from "react-use";
 
 const Home: NextPage = () => {
   const [status, setStatus] = useState<
     "idle" | "submitting" | "error" | "success"
   >("idle");
-  const [formState, setFormState] = useState<Partial<Submission>>({});
-  const [recordId, setRecordId] = useLocalStorage("recordId", null);
+  const [formState, setFormState] = useState<Partial<Submission>>({
+    DateDeNaissance: "2022-12-15",
+  });
+  const [recordId, setRecordId] = useCookie("recordId");
 
   const router = useRouter();
 
@@ -20,10 +22,7 @@ const Home: NextPage = () => {
     }
   });
 
-  console.log(formState);
-
   const handleInputChange = (event: any) => {
-    console.log(event.target.type, event.target.value);
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
@@ -48,7 +47,7 @@ const Home: NextPage = () => {
       .then((res) => res.json())
       .then((data) => {
         setStatus("success");
-        setRecordId(data.id);
+        setRecordId(data.id, { sameSite: "lax", expires: 365 });
       })
       .catch(() => {
         setStatus("error");
@@ -73,9 +72,9 @@ const Home: NextPage = () => {
         </p>
 
         <form onSubmit={handleSubmit}>
-          <div className="p-6 font-bold text-gray-900 bg-white border rounded shadow-lg">
-            <p className="text-lg leading-relaxed">
-              Je pense que le bébé sera
+          <div className="p-6 text-lg font-bold text-gray-900 bg-white border rounded shadow-lg sm:min-w-[650px] max-w-screen-md m-6">
+            <div className="flex flex-col items-baseline justify-between sm:flex-row">
+              <p>Je pense que le bébé sera</p>
               <select
                 onChange={handleInputChange}
                 className="input"
@@ -88,7 +87,9 @@ const Home: NextPage = () => {
                 <option value="M">un petit garçon</option>
                 <option value="F">une petite fille</option>
               </select>
-              qui s'appellera
+            </div>
+            <div className="flex flex-col items-baseline justify-between sm:flex-row">
+              <p> qui s'appellera</p>
               <input
                 className="input"
                 required
@@ -98,33 +99,43 @@ const Home: NextPage = () => {
                 autoComplete="off"
                 onChange={handleInputChange}
               />
-              , qui pèsera
-              <input
-                className="w-24 input"
-                required
-                type="number"
-                placeholder="Poids"
-                name="Poids"
-                min={0.0}
-                step={0.1}
-                max={10.0}
-                onChange={handleInputChange}
-              />{" "}
-              kilos et qui mesurera
-              <input
-                className="w-24 input"
-                required
-                type="number"
-                placeholder="Taille"
-                name="Taille"
-                min={0}
-                step={1}
-                max={100}
-                onChange={handleInputChange}
-              />{" "}
-              centimètres.
-              <br />
-              {formState.Sexe === "F" ? "Elle" : "Il"} aura une tête
+            </div>
+            <div className="flex flex-col items-baseline justify-between sm:flex-row">
+              <p>qui pèsera</p>
+              <span className="font-mono font-light">
+                <input
+                  className="w-24 input"
+                  required
+                  type="number"
+                  placeholder="Poids"
+                  name="Poids"
+                  min={0.0}
+                  step={0.1}
+                  max={10.0}
+                  onChange={handleInputChange}
+                />{" "}
+                kg
+              </span>
+            </div>
+            <div className="flex flex-col items-baseline justify-between sm:flex-row">
+              <p>et qui mesurera</p>
+              <span className="font-mono font-light">
+                <input
+                  className="w-24 input"
+                  required
+                  type="number"
+                  placeholder="Taille"
+                  name="Taille"
+                  min={0}
+                  step={1}
+                  max={100}
+                  onChange={handleInputChange}
+                />{" "}
+                cm
+              </span>
+            </div>
+            <div className="flex flex-col items-baseline justify-between sm:flex-row">
+              <p>{formState.Sexe === "F" ? "Elle" : "Il"} aura une tête</p>
               <select
                 onChange={handleInputChange}
                 className="input"
@@ -138,32 +149,34 @@ const Home: NextPage = () => {
                 <option value="Duvet">duveteuse</option>
                 <option value="Cheveux">chevelue</option>
               </select>
-              .
-              <br />
-              {formState.Sexe === "F" ? "Elle" : "Il"} naîtra le
-              <input
-                className="input"
-                type="date"
-                required
-                onChange={handleInputChange}
-                name="DateDeNaissance"
-                defaultValue="2022-12-15"
-                min="2022-11-01"
-                max="2022-12-31"
-              />
-              à
-              <input
-                onChange={handleInputChange}
-                className="input"
-                required
-                type="time"
-                id="HeureDeNaissance"
-                name="HeureDeNaissance"
-                min="00:00"
-                max="24:00"
-              />
-              .
-            </p>
+            </div>{" "}
+            <div className="flex flex-col items-baseline justify-between sm:flex-row">
+              <p>{formState.Sexe === "F" ? "Elle" : "Il"} naîtra le</p>
+              <span>
+                <input
+                  className="input"
+                  type="date"
+                  required
+                  onChange={handleInputChange}
+                  name="DateDeNaissance"
+                  defaultValue="2022-12-15"
+                  min="2022-11-01"
+                  max="2022-12-31"
+                />{" "}
+                à{" "}
+                <input
+                  onChange={handleInputChange}
+                  className="input"
+                  required
+                  type="time"
+                  id="HeureDeNaissance"
+                  name="HeureDeNaissance"
+                  min="00:00"
+                  max="24:00"
+                />
+                .
+              </span>
+            </div>
           </div>
           <div className="mb-12">
             <div className="grid grid-cols-2 gap-6">
@@ -210,7 +223,7 @@ const Home: NextPage = () => {
           </div>
 
           <button
-            className="px-10 py-4 text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-pink-800 to-blue-800 font-intro-bold"
+            className="button"
             disabled={status === "submitting"}
             type="submit"
           >
