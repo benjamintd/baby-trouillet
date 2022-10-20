@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { Submission } from "../models/Submission";
 import { useCookie } from "react-use";
+import LoadingDots from "../components/LoadingDots";
+import classNames from "classnames";
 
 const Home: NextPage = () => {
   const [status, setStatus] = useState<
@@ -228,11 +230,22 @@ const Home: NextPage = () => {
           </div>
 
           <button
-            className="button"
+            className={classNames("mx-auto button text-center", {
+              "!text-transparent": status === "submitting",
+            })}
             disabled={status === "submitting"}
             type="submit"
           >
-            Envoyer
+            {status === "submitting" && (
+              <LoadingDots className="absolute text-white" />
+            )}
+            {status === "idle" || status === "submitting"
+              ? "Envoyer"
+              : status === "error"
+              ? "Erreur 🙃"
+              : status === "success"
+              ? "Envoyé ✨"
+              : "Envoyer"}
           </button>
         </form>
       </main>

@@ -24,7 +24,7 @@
   }
 
   .button {
-    @apply px-10 py-4 text-xl md:text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-pink-800 to-blue-800 font-intro-bold;
+    @apply px-10 py-4 text-xl flex items-center justify-center md:text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-pink-800 to-blue-800 font-intro-bold whitespace-nowrap;
   }
 }
 
