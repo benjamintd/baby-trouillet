@@ -20,7 +20,7 @@
   }
 
   .secondary-input {
-    @apply border-none rounded font-intro-bold text-gray-700 ring-1 ring-gray-600 focus:ring;
+    @apply border-none rounded font-intro-bold text-gray-700 ring-1 ring-cyan-700 focus:ring focus:ring-cyan-600;
   }
 
   .button {
