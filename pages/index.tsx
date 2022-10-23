@@ -57,13 +57,16 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-50">
+    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-1">
       <Head>
         <title>Baby Bensarah</title>
         <link rel="icon" href="/favicon.png" />
         <meta name="robots" content="noindex" />
         {/* description and open graph */}
-        <meta name="description" content="Pronistics pour le bébé Tran Mamy." />
+        <meta
+          name="description"
+          content="Pronostics pour le bébé Tran Mamy 🐣"
+        />
         <meta property="og:title" content="Baby Bensarah" />
         <meta
           property="og:image"
