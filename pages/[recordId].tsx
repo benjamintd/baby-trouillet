@@ -53,11 +53,11 @@ const Page = ({ record }: { record: Submission }) => {
             <span className="text-sky-700 font-intro-bold">
               {record.Prénom}
             </span>
-            , qui pèsera{" "}
+            . {record.Sexe === "F" ? "Elle" : "Il"} pèsera{" "}
             <span className="text-sky-700 font-intro-bold">
               {record.Poids} kilos
             </span>{" "}
-            et qui mesurera{" "}
+            et mesurera{" "}
             <span className="text-sky-700 font-intro-bold">
               {record.Taille} centimètres
             </span>
