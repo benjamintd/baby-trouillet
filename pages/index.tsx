@@ -57,7 +57,7 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-pink-50 bg-gradient-to-br to-blue-50">
+    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-50">
       <Head>
         <title>Baby Bensarah</title>
         <link rel="icon" href="/favicon.png" />
@@ -72,11 +72,11 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-cyan-800 font-intro-bold">
+        <h1 className="mb-4 text-6xl text-sky-800 font-intro-bold">
           Baby Bensarah
         </h1>
 
-        <p className="mb-8 text-lg text-cyan-900">
+        <p className="mb-8 text-lg text-sky-900">
           Nous attendons avec impatience la naissance de notre bébé. Pour
           l'occasion, nous avons décidé de faire un petit jeu&nbsp;!
           <br />À la clé, une bouteille de champagne 🍾 et une rencontre

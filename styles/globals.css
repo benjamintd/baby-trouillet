@@ -16,15 +16,15 @@
   }
 
   .input {
-    @apply my-2 mx-1 text-base md:text-lg border-none rounded font-intro-bold text-cyan-700 ring-1 ring-cyan-700/20 focus:ring focus:ring-cyan-600;
+    @apply my-2 mx-1 text-base md:text-lg border-none rounded font-intro-bold text-sky-700 ring-1 ring-sky-700/20 focus:ring focus:ring-sky-600;
   }
 
   .secondary-input {
-    @apply border-none rounded font-intro-bold text-gray-700 ring-1 ring-cyan-700 focus:ring focus:ring-cyan-600;
+    @apply border-none rounded font-intro-bold text-gray-700 ring-1 ring-sky-700 focus:ring focus:ring-sky-600;
   }
 
   .button {
-    @apply px-10 py-4 text-xl flex items-center justify-center md:text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-pink-800 to-blue-800 font-intro-bold whitespace-nowrap;
+    @apply px-10 py-4 text-xl flex items-center justify-center md:text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-rose-800 to-indigo-800 font-intro-bold whitespace-nowrap;
   }
 }
 

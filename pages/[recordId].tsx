@@ -24,12 +24,12 @@ const Page = ({ record }: { record: Submission }) => {
 
   if (!record) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-pink-50 bg-gradient-to-br to-blue-50" />
+      <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100" />
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-pink-50 bg-gradient-to-br to-blue-50">
+    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100">
       <Head>
         <title>Baby Bensarah</title>
         <link rel="icon" href="/favicon.png" />
@@ -37,34 +37,34 @@ const Page = ({ record }: { record: Submission }) => {
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-cyan-800 font-intro-bold">
+        <h1 className="mb-4 text-6xl text-sky-800 font-intro-bold">
           Baby Bensarah
         </h1>
 
-        <p className="mb-8 text-lg text-cyan-900">{`Merci ${record.Nom} d'avoir joué avec nous ! ❤️`}</p>
+        <p className="mb-8 text-lg text-sky-900">{`Merci ${record.Nom} d'avoir joué avec nous ! ❤️`}</p>
 
         <div className="w-full max-w-2xl p-6 font-bold text-gray-900 bg-white border rounded shadow-lg">
           <p className="text-lg leading-relaxed">
             Je pense que le bébé sera{" "}
-            <span className="text-cyan-700 font-intro-bold">
+            <span className="text-sky-700 font-intro-bold">
               {record.Sexe === "M" ? "un petit garçon" : "une petite fille"}
             </span>{" "}
             qui s'appellera{" "}
-            <span className="text-cyan-700 font-intro-bold">
+            <span className="text-sky-700 font-intro-bold">
               {record.Prénom}
             </span>
             , qui pèsera{" "}
-            <span className="text-cyan-700 font-intro-bold">
+            <span className="text-sky-700 font-intro-bold">
               {record.Poids} kilos
             </span>{" "}
             et qui mesurera{" "}
-            <span className="text-cyan-700 font-intro-bold">
+            <span className="text-sky-700 font-intro-bold">
               {record.Taille} centimètres
             </span>
             .
             <br />
             {record.Sexe === "F" ? "Elle" : "Il"} aura une tête{" "}
-            <span className="text-cyan-700 font-intro-bold">
+            <span className="text-sky-700 font-intro-bold">
               {record.Cheveux === "Aucun"
                 ? "chauve"
                 : record.Cheveux === "Duvet"
@@ -74,14 +74,14 @@ const Page = ({ record }: { record: Submission }) => {
             .
             <br />
             {record.Sexe === "F" ? "Elle" : "Il"} naîtra le{" "}
-            <span className="text-cyan-700 font-intro-bold">
+            <span className="text-sky-700 font-intro-bold">
               {new Date(record.DateDeNaissance).toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "long",
               })}
             </span>{" "}
             à{" "}
-            <span className="text-cyan-700 font-intro-bold">
+            <span className="text-sky-700 font-intro-bold">
               {record.HeureDeNaissance}
             </span>
             .
