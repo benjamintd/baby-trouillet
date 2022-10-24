@@ -34,6 +34,16 @@ const Page = ({ record }: { record: Submission }) => {
         <title>Baby Bensarah</title>
         <link rel="icon" href="/favicon.png" />
         <meta name="robots" content="noindex" />
+        {/* description and open graph */}
+        <meta
+          name="description"
+          content="Pronostics pour le bébé Tran Mamy 🐣"
+        />
+        <meta property="og:title" content="Baby Bensarah" />
+        <meta
+          property="og:image"
+          content="https://baby.bensarah.fr/og-image.png"
+        />
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
