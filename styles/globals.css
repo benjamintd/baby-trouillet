@@ -26,6 +26,54 @@
   .button {
     @apply px-10 py-4 text-xl flex items-center justify-center md:text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-rose-800 to-indigo-800 font-intro-bold whitespace-nowrap;
   }
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .bg-hit {
+    @apply bg-rose-400 dark:bg-rose-600;
+  }
+
+  .bg-misplaced {
+    @apply bg-orange-300 dark:bg-orange-500;
+  }
+
+  .text-miss {
+    @apply text-gray-400 dark:text-gray-600;
+  }
+
+  .box-base {
+    @apply h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12;
+  }
+
+  .box-sm {
+    @apply h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8;
+  }
+
+  .hint-base {
+    @apply h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10;
+  }
+
+  .hint-sm {
+    @apply h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6;
+  }
+
+  .vertical-centered {
+    @apply flex flex-col items-center gap-2;
+  }
+
+  .badge {
+    @apply rounded-sm bg-gray-200 px-1 py-0.5 text-sm text-gray-500 dark:bg-gray-700 dark:text-gray-400;
+  }
+
+  .shadowed {
+    @apply shadow-lg dark:shadow-gray-700;
+  }
+
+  .bg-normal {
+    @apply bg-white text-black dark:bg-gray-800 dark:text-white;
+  }
 }
 
 @font-face {
