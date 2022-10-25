@@ -21,8 +21,8 @@ const ConfettiCanvas = () => {
         disableForReducedMotion={true}
         resize={true}
         useWorker={true}
-        scalar={0.8}
-        ticks={50}
+        scalar={1}
+        ticks={300}
       />
     </div>
   );

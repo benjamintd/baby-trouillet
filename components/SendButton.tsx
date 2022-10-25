@@ -4,7 +4,10 @@ const SendButton = () => {
   const validateWord = useValidateWord();
 
   return (
-    <button onClick={validateWord} className="mt-12 button whitespace-nowrap">
+    <button
+      onClick={validateWord}
+      className="mx-auto mt-6 button whitespace-nowrap"
+    >
       Tester ce prénom
     </button>
   );

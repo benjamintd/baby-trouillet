@@ -48,12 +48,12 @@ const Page = ({ record }: { record: Submission }) => {
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-sky-800 font-intro-bold">
+        <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
           Baby Bensarah
         </h1>
 
         <p className="mb-8 text-lg text-sky-900">{`Merci ${record.Nom} d'avoir joué avec nous ! ❤️`}</p>
-        
+
         <ResponseCard record={record} />
 
         <p className="mt-2 text-gray-800 justify-self-end">

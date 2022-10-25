@@ -3,8 +3,8 @@ import { Submission } from "../models/Submission";
 const ResponseCard = ({ record }: { record: Submission }) => {
   return (
     <div className="w-full max-w-2xl p-6 font-bold text-gray-900 bg-white border rounded shadow-lg">
-      <p className="text-lg leading-relaxed">
-        Je pense que le bébé sera{" "}
+      <p className="leading-relaxed">
+        « Je pense que le bébé sera{" "}
         <span className="text-sky-700 font-intro-bold">
           {record.Sexe === "M" ? "un petit garçon" : "une petite fille"}
         </span>{" "}
@@ -41,7 +41,7 @@ const ResponseCard = ({ record }: { record: Submission }) => {
         <span className="text-sky-700 font-intro-bold">
           {record.HeureDeNaissance}
         </span>
-        .
+        . »
       </p>
     </div>
   );

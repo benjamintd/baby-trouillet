@@ -36,10 +36,7 @@ const useValidateWord = (): (() => Promise<void>) => {
           ...game.turns,
           {
             word: currentTyped,
-            check: getCheck(
-              normalizeString(currentTyped),
-              normalizeString(currentWord)
-            ),
+            check: getCheck(currentWord, currentTyped),
             success:
               normalizeString(currentTyped) === normalizeString(currentWord),
           },
