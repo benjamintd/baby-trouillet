@@ -64,7 +64,7 @@ const Page = ({ record }: { record: Submission }) => {
         </p>
 
         <a
-          className="mt-12 button whitespace-nowrap"
+          className="pt-12 button whitespace-nowrap"
           href="https://bientot9mois.fr/liste-naissance/ef1a218c-4a2f-4a91-b621-796ec909d7a4"
         >
           Voir la liste de naissance
