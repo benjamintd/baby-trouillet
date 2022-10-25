@@ -17,7 +17,8 @@ import { gameAtom, hasWonAtom, validWordsAtom } from "../core/atoms";
 import fr from "../lib/dictionnaries/fr";
 import normalizeString from "../lib/normalizeString";
 import { Submission } from "../models/Submission";
-
+import photo from "../public/photo.jpg";
+import fs from "fs";
 const Page = ({
   record,
   reveal,
@@ -28,16 +29,17 @@ const Page = ({
   possibleNames: string[];
 }) => {
   const [_, setValidWords] = useAtom(validWordsAtom);
-  const [_1, setGame] = useAtom(gameAtom);
+  const [game, setGame] = useAtom(gameAtom);
   const [hasWon] = useAtom(hasWonAtom);
   useEffect(() => {
     setValidWords(possibleNames);
-    setGame({
-      word: reveal.Prénom,
-      turns: [],
-    });
-  }, []);
-  console.log(record);
+    if (game === null) {
+      setGame({
+        word: reveal.Prénom,
+        turns: [],
+      });
+    }
+  }, [game]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100">
@@ -52,23 +54,21 @@ const Page = ({
           property="og:image"
           content="https://baby.bensarah.fr/og-image.png"
         />
-        <link rel="preload" as="image" href={"/photo.jpg"} />
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
         <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
           👋 Une bonne nouvelle
         </h1>
+        {record && (
+          <>
+            <p className="mb-2 text-sm text-sky-900">{`Notre bébé est arrivé ! Voilà ce que tu avais parié :`}</p>
+            <div className="mx-auto text-sm">
+              <ResponseCard record={record} />
+            </div>
+          </>
+        )}
         <ClientOnly>
-          {record && (
-            <>
-              <p className="mb-2 text-sm text-sky-900">{`Notre bébé est arrivé ! Voilà ce que tu avais parié :`}</p>
-              <div className="text-sm">
-                <ResponseCard record={record} />
-              </div>
-            </>
-          )}
-
           <p className="py-8 text-2xl text-sky-900">
             Nous avons{" "}
             {record?.Sexe &&
@@ -126,8 +126,13 @@ const Page = ({
                 {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
                 <strong className="font-intro-bold">{reveal.Prénom}</strong> ❤️
               </p>
-              <div className="relative w-full h-64 overflow-hidden rounded shadow">
-                <Image layout="fill" objectFit="cover" src="/photo.jpg" />
+              <div className="relative w-full overflow-hidden rounded shadow aspect-video">
+                <Image
+                  layout="fill"
+                  objectFit="cover"
+                  src={photo}
+                  placeholder="blur"
+                />
               </div>
               <p className="mt-2 text-gray-800 justify-self-end">
                 <button

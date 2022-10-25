@@ -16,7 +16,9 @@ const GameGrid = () => {
   return (
     <div
       onClick={() => {
-        document.getElementById("input")?.focus?.();
+        document.getElementById("input")?.focus?.({
+          preventScroll: true,
+        });
       }}
       className="flex flex-col items-center"
     >

@@ -15,7 +15,9 @@ const GameInput = () => {
   const el = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (el.current && !isMobile) {
-      el.current.focus();
+      el.current.focus({
+        preventScroll: true,
+      });
     }
   }, []);
 
@@ -39,9 +41,18 @@ const GameInput = () => {
       value={currentTyped}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
+      onBlurCapture={(e) =>
+        e.currentTarget.focus({
+          preventScroll: true,
+        })
+      }
       type="text"
       autoFocus={!isMobile}
-      onBlur={(e) => e.currentTarget.focus()}
+      onBlur={(e) =>
+        e.currentTarget.focus({
+          preventScroll: true,
+        })
+      }
     />
   );
 };
