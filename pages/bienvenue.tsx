@@ -134,7 +134,7 @@ const Page = ({
                   placeholder="blur"
                 />
               </div>
-              <p className="mt-2 text-gray-800 justify-self-end">
+              <p className="mt-2 mb-8 text-gray-800 justify-self-end">
                 <button
                   onClick={() => setGame(RESET)}
                   className="border-b border-gray-800"
@@ -144,7 +144,7 @@ const Page = ({
               </p>
 
               <a
-                className="mt-8 text-lg underline text-sky-700 whitespace-nowrap underline-offset-2"
+                className="pt-8 text-lg underline text-sky-700 whitespace-nowrap underline-offset-2"
                 href="https://bientot9mois.fr/liste-naissance/ef1a218c-4a2f-4a91-b621-796ec909d7a4"
               >
                 Voir la liste de naissance
@@ -169,8 +169,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Sophie",
-    Sexe: "F",
+    Prénom: "Constant",
+    Sexe: "M",
     Poids: 4.1,
     Taille: 52,
     Cheveux: "Duvet",
