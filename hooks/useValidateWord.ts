@@ -1,6 +1,7 @@
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
+import { hotjar } from "react-hotjar";
 import useSWR from "swr";
 import {
   currentTypedAtom,
@@ -42,6 +43,12 @@ const useValidateWord = (): (() => Promise<void>) => {
           },
         ],
       });
+
+      if (hotjar.initialized()) {
+        // Identify the user
+        hotjar.event(currentTyped);
+      }
+
       setCurrentTyped("");
     } else {
       return setError("Ce prénom n'est pas dans la liste");

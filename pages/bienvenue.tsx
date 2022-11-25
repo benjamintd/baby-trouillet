@@ -18,7 +18,7 @@ import fr from "../lib/dictionnaries/fr";
 import normalizeString from "../lib/normalizeString";
 import { Submission } from "../models/Submission";
 import photo from "../public/photo.jpg";
-import fs from "fs";
+import { hotjar } from "react-hotjar";
 const Page = ({
   record,
   reveal,
@@ -40,6 +40,13 @@ const Page = ({
       });
     }
   }, [game]);
+
+  useEffect(() => {
+    if (hotjar.initialized()) {
+      // Identify the user
+      hotjar.identify("USER_ID", { userProperty: record.Email });
+    }
+  }, [record]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100">
@@ -169,8 +176,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Constant",
-    Sexe: "M",
+    Prénom: "Andréa",
+    Sexe: "F",
     Poids: 4.1,
     Taille: 52,
     Cheveux: "Duvet",
