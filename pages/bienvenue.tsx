@@ -132,6 +132,7 @@ const Page = ({
               <p className="pb-8 text-2xl text-sky-900">
                 {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
                 <strong className="font-intro-bold">{reveal.Prénom}</strong> ❤️
+                et nous sommes comblés de bonheur !
               </p>
               <div className="relative w-full overflow-hidden rounded shadow aspect-video">
                 <Image
