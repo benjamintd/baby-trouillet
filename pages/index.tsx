@@ -75,7 +75,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-sky-800 font-intro-bold">
+        <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
           Baby Bensarah
         </h1>
 

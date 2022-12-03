@@ -4,6 +4,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useCookie } from "react-use";
+import ResponseCard from "../components/ResponseCard";
 import { Submission } from "../models/Submission";
 
 const Page = ({ record }: { record: Submission }) => {
@@ -47,56 +48,14 @@ const Page = ({ record }: { record: Submission }) => {
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-sky-800 font-intro-bold">
+        <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
           Baby Bensarah
         </h1>
 
         <p className="mb-8 text-lg text-sky-900">{`Merci ${record.Nom} d'avoir joué avec nous ! ❤️`}</p>
 
-        <div className="w-full max-w-2xl p-6 font-bold text-gray-900 bg-white border rounded shadow-lg">
-          <p className="text-lg leading-relaxed">
-            Je pense que le bébé sera{" "}
-            <span className="text-sky-700 font-intro-bold">
-              {record.Sexe === "M" ? "un petit garçon" : "une petite fille"}
-            </span>{" "}
-            qui s'appellera{" "}
-            <span className="text-sky-700 font-intro-bold">
-              {record.Prénom}
-            </span>
-            . {record.Sexe === "F" ? "Elle" : "Il"} pèsera{" "}
-            <span className="text-sky-700 font-intro-bold">
-              {record.Poids} kilos
-            </span>{" "}
-            et mesurera{" "}
-            <span className="text-sky-700 font-intro-bold">
-              {record.Taille} centimètres
-            </span>
-            .
-            <br />
-            {record.Sexe === "F" ? "Elle" : "Il"} aura une tête{" "}
-            <span className="text-sky-700 font-intro-bold">
-              {record.Cheveux === "Aucun"
-                ? "chauve"
-                : record.Cheveux === "Duvet"
-                ? "duveteuse"
-                : "chevelue"}
-            </span>
-            .
-            <br />
-            {record.Sexe === "F" ? "Elle" : "Il"} naîtra le{" "}
-            <span className="text-sky-700 font-intro-bold">
-              {new Date(record.DateDeNaissance).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "long",
-              })}
-            </span>{" "}
-            à{" "}
-            <span className="text-sky-700 font-intro-bold">
-              {record.HeureDeNaissance}
-            </span>
-            .
-          </p>
-        </div>
+        <ResponseCard record={record} />
+
         <p className="mt-2 text-gray-800 justify-self-end">
           Vous voulez changer votre pari ?{" "}
           <button onClick={replay} className="border-b border-gray-800">
