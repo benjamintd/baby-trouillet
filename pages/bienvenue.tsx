@@ -114,7 +114,7 @@ const Page = ({
                 faudra résoudre ce puzzle ! 🧩
               </p>
               <p className="mb-4 text-sm text-sky-900">
-                Tapez un prénom qui rentre dans la grille. Les lettres en rouge
+                Tape un prénom qui rentre dans la grille. Les lettres en rouge
                 🔴 sont bien placées, les lettres en orange 🔶 sont dans la
                 solution mais mal placées.
               </p>
@@ -179,7 +179,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     Adresse: "",
     Prénom: "Andréa",
     Sexe: "F",
-    Poids: 3.2,
+    Poids: 3.23,
     Taille: 51,
     Cheveux: "Duvet",
     DateDeNaissance: new Date(2022, 11, 3).toISOString(),

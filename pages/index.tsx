@@ -1,4 +1,4 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -254,6 +254,16 @@ const Home: NextPage = () => {
       </main>
     </div>
   );
+};
+
+// redirect to /bienvenue on load
+export const getServerSideProps: GetServerSideProps = async () => {
+  return {
+    redirect: {
+      destination: "/bienvenue",
+      permanent: true,
+    },
+  };
 };
 
 export default Home;
