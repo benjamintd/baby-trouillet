@@ -42,7 +42,7 @@ const Page = ({
   }, [game]);
 
   useEffect(() => {
-    if (hotjar.initialized()) {
+    if (hotjar.initialized() && record?.Email) {
       // Identify the user
       hotjar.identify("USER_ID", { userProperty: record.Email });
     }
@@ -178,11 +178,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     Adresse: "",
     Prénom: "Andréa",
     Sexe: "F",
-    Poids: 4.1,
-    Taille: 52,
+    Poids: 3.2,
+    Taille: 51,
     Cheveux: "Duvet",
-    DateDeNaissance: new Date(2022, 11, 15).toISOString(),
-    HeureDeNaissance: "23:00",
+    DateDeNaissance: new Date(2022, 11, 3).toISOString(),
+    HeureDeNaissance: "7:11",
   };
 
   const possibleNames = fr
