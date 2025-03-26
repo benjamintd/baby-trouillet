@@ -1,16 +1,10 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useRef } from "react";
-import confetti from "canvas-confetti";
-import { shuffle } from "lodash";
-
-// Only "natural" reading directions
-const DIRECTIONS = [
-  [1, 1], // diagonal down-right
-  [-1, 1], // diagonal up-right
-  [0, 1], // right
-  [1, 0], // down
-];
+import { useState, useEffect, useRef } from "react"
+import confetti from "canvas-confetti"
+import { shuffle } from "lodash"
+import { placeWordsInGrid, type Cell, type Direction } from "../lib/placeWordsInGrid"
+import fr from "../lib/dictionnaries/fr"
 
 // Sample word list - can be customized
 const WORD_LIST = shuffle([
@@ -36,7 +30,6 @@ const WORD_LIST = shuffle([
   "ROMY",
   "JEANNE",
   "MANON",
-  "INAYA",
   "EVA",
   "NINA",
   "CAMILLE",
@@ -44,7 +37,6 @@ const WORD_LIST = shuffle([
   "LEONIE",
   "IRIS",
   "ADELE",
-  "LUNA",
   "OLIVIA",
   "CHARLOTTE",
   "CHARLIE",
@@ -84,7 +76,6 @@ const WORD_LIST = shuffle([
   "SOLINE",
   "ALBANE",
   "CELESTE",
-  "AMELIA",
   "FAUSTINE",
   "MAELLE",
   "MELINA",
@@ -100,7 +91,6 @@ const WORD_LIST = shuffle([
   "MAEL",
   "LIAM",
   "ETHAN",
-  "NOAH",
   "NATHAN",
   "PAUL",
   "SACHA",
@@ -111,7 +101,6 @@ const WORD_LIST = shuffle([
   "THEO",
   "ENZO",
   "MATHIS",
-  "EDEN",
   "TIMEO",
   "VICTOR",
   "AXEL",
@@ -122,10 +111,6 @@ const WORD_LIST = shuffle([
   "ROBIN",
   "VALENTIN",
   "NAEL",
-  "RAYAN",
-  "TIAGO",
-  "CLEMENT",
-  "YANIS",
   "BAPTISTE",
   "MAXIME",
   "SAMUEL",
@@ -144,12 +129,7 @@ const WORD_LIST = shuffle([
   "AMIR",
   "THOMAS",
   "LENNY",
-  "SOHAN",
-  "NOA",
   "OSCAR",
-  "SOAN",
-  "COME",
-  "OWEN",
   "ALEXIS",
   "LEANDRE",
   "JOSEPH",
@@ -164,328 +144,219 @@ const WORD_LIST = shuffle([
   "BASILE",
   "JEAN",
   "ANTONIN",
-]);
+])
 
-const BONUS_WORD = "ROMANE"; // Special bonus word
-const GRID_SIZE = 9;
+
+
+const BONUS_WORD = "ROMANE" // Special bonus word
+
+
+const ALL_VALID_WORDS = [...fr, ...WORD_LIST, BONUS_WORD].filter((word) => word.length >= 2).sort()
+
+const GRID_SIZE = 10
 
 export default function MotsMeles() {
-  const [grid, setGrid] = useState<string[][]>([]);
+  const [grid, setGrid] = useState<string[][]>([])
   const [foundWords, setFoundWords] = useState<
     {
-      word: string;
-      cells: number[][];
-      isBonus: boolean;
+      word: string
+      cells: Cell[]
+      isBonus: boolean
+      direction?: Direction
     }[]
-  >([]);
-  const [selectedCells, setSelectedCells] = useState<number[][]>([]);
-  const [startCell, setStartCell] = useState<number[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
-  const gridRef = useRef<HTMLDivElement>(null);
-  const cellRefs = useRef<Map<string, DOMRect>>(new Map());
+  >([])
+  const [selectedCells, setSelectedCells] = useState<Cell[]>([])
+  const [startCell, setStartCell] = useState<Cell>([0,0])
+  const [isDragging, setIsDragging] = useState(false)
+  const [bonusWordCells, setBonusWordCells] = useState<{
+    cells: Cell[]
+    direction: Direction
+  }>({ cells: [], direction: [0, 0] })
+  const gridRef = useRef<HTMLDivElement>(null)
+  const cellRefs = useRef<Map<string, DOMRect>>(new Map())
 
   // Initialize the game
   useEffect(() => {
-    generateNewGame();
-  }, []);
+    generateNewGame()
+  }, [])
 
   // Check if game is won
   useEffect(() => {
-    if (
-      foundWords.filter((fw) => !fw.isBonus).length === WORD_LIST.length ||
-      foundWords.some((fw) => fw.isBonus)
-    ) {
-      triggerConfetti();
+    if (foundWords.filter((fw) => !fw.isBonus).length === WORD_LIST.length || foundWords.some((fw) => fw.isBonus)) {
+      triggerConfetti()
     }
-  }, [foundWords]);
+  }, [foundWords])
 
   // Generate a new game with words placed in the grid
   const generateNewGame = () => {
-    setFoundWords([]);
+    setFoundWords([])
+    setBonusWordCells({ cells: [], direction: [0, 0] })
 
     // Create empty GRID_SIZE grid
     const newGrid = Array(GRID_SIZE)
       .fill(null)
-      .map(() => Array(GRID_SIZE).fill(""));
+      .map(() => Array(GRID_SIZE).fill(""))
 
     // Place words in the grid
-    const allWords = [BONUS_WORD, ...WORD_LIST];
+    const allWords = [BONUS_WORD, ...WORD_LIST]
     try {
-      placeWordsInGrid(newGrid, allWords);
+      const { bonusWordCells, bonusWordDirection, unplacedWords } = placeWordsInGrid(newGrid, allWords, GRID_SIZE)
+
+      setBonusWordCells({
+        cells: bonusWordCells,
+        direction: bonusWordDirection,
+      })
 
       // Fill remaining cells with random letters
       for (let row = 0; row < GRID_SIZE; row++) {
         for (let col = 0; col < GRID_SIZE; col++) {
           if (newGrid[row][col] === "") {
-            newGrid[row][col] = String.fromCharCode(
-              65 + Math.floor(Math.random() * 26)
-            );
+            newGrid[row][col] = String.fromCharCode(65 + Math.floor(Math.random() * 26))
           }
         }
       }
 
-      setGrid(newGrid);
+      setGrid(newGrid)
+
+      // Log how many words were placed successfully
+      console.log(`Placed ${allWords.length - unplacedWords.length} out of ${allWords.length} words`)
+      if (unplacedWords.length > 0) {
+        console.log(`Unplaced words: ${unplacedWords.join(", ")}`)
+      }
     } catch (error) {
+      console.error("Error placing words:", error)
       // Create a fallback grid with random letters if placement fails
       const fallbackGrid = Array(GRID_SIZE)
         .fill(null)
         .map(() =>
           Array(GRID_SIZE)
             .fill("")
-            .map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26)))
-        );
+            .map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26))),
+        )
 
-      setGrid(fallbackGrid);
+      setGrid(fallbackGrid)
     }
 
     // Reset cell refs for new game
-    cellRefs.current = new Map();
-  };
-
-  // Place words in the grid in random directions
-  const placeWordsInGrid = (grid: string[][], words: string[]) => {
-    const unplacedWords: string[] = [];
-
-    // Track which directions have been used
-    const usedDirections = new Set<number>();
-
-    for (const word of words) {
-      let placed = false;
-      let attempts = 0;
-      const maxAttempts = 200; // Increase attempts to give more chances
-
-      // First try to place the word in an unused direction
-      if (usedDirections.size < DIRECTIONS.length) {
-        // Try each unused direction first
-        for (let dirIndex = 0; dirIndex < DIRECTIONS.length; dirIndex++) {
-          // Skip if this direction has already been used
-          if (usedDirections.has(dirIndex)) continue;
-
-          const [dRow, dCol] = DIRECTIONS[dirIndex];
-
-          // Try multiple positions with this direction
-          for (let posAttempt = 0; posAttempt < 50; posAttempt++) {
-            const row = Math.floor(Math.random() * GRID_SIZE);
-            const col = Math.floor(Math.random() * GRID_SIZE);
-
-            if (canPlaceWord(grid, word, row, col, dRow, dCol)) {
-              // Place the word
-              for (let i = 0; i < word.length; i++) {
-                const currentRow = row + i * dRow;
-                const currentCol = col + i * dCol;
-                grid[currentRow][currentCol] = word[i];
-              }
-              placed = true;
-              usedDirections.add(dirIndex);
-              break;
-            }
-          }
-
-          if (placed) break;
-        }
-      }
-
-      // If still not placed, try random directions
-      while (!placed && attempts < maxAttempts) {
-        attempts++;
-
-        // Choose random starting position and direction
-        const row = Math.floor(Math.random() * GRID_SIZE);
-        const col = Math.floor(Math.random() * GRID_SIZE);
-        const dirIndex = Math.floor(Math.random() * DIRECTIONS.length);
-        const [dRow, dCol] = DIRECTIONS[dirIndex];
-
-        // Check if word fits in the grid in this direction
-        if (canPlaceWord(grid, word, row, col, dRow, dCol)) {
-          // Place the word
-          for (let i = 0; i < word.length; i++) {
-            const currentRow = row + i * dRow;
-            const currentCol = col + i * dCol;
-            grid[currentRow][currentCol] = word[i];
-          }
-          placed = true;
-          usedDirections.add(dirIndex);
-        }
-      }
-
-      if (!placed) {
-        unplacedWords.push(word);
-      }
-    }
-
-    return unplacedWords;
-  };
-
-  // Check if a word can be placed at a specific position and direction
-  const canPlaceWord = (
-    grid: string[][],
-    word: string,
-    row: number,
-    col: number,
-    dRow: number,
-    dCol: number
-  ) => {
-    // Check if word would go out of bounds
-    if (
-      row + dRow * (word.length - 1) < 0 ||
-      row + dRow * (word.length - 1) >= GRID_SIZE ||
-      col + dCol * (word.length - 1) < 0 ||
-      col + dCol * (word.length - 1) >= GRID_SIZE
-    ) {
-      return false;
-    }
-
-    // Check cells for placement
-    for (let i = 0; i < word.length; i++) {
-      const currentRow = row + i * dRow;
-      const currentCol = col + i * dCol;
-      const currentCell = grid[currentRow][currentCol];
-
-      // First and last letters must be placed in empty cells
-      if ((i === 0 || i === word.length - 1) && currentCell !== "") {
-        return false;
-      }
-
-      // Middle letters can intersect if they match
-      if (currentCell !== "" && currentCell !== word[i]) {
-        return false;
-      }
-    }
-
-    return true;
-  };
+    cellRefs.current = new Map()
+  }
 
   // Store cell position for drawing lines
-  const storeCellRef = (
-    row: number,
-    col: number,
-    element: HTMLDivElement | null
-  ) => {
+  const storeCellRef = (row: number, col: number, element: HTMLDivElement | null) => {
     if (element) {
-      const rect = element.getBoundingClientRect();
-      cellRefs.current.set(`${row},${col}`, rect);
+      const rect = element.getBoundingClientRect()
+      cellRefs.current.set(`${row},${col}`, rect)
     }
-  };
+  }
 
   // Find the closest standard direction
-  const findClosestDirection = (rowDiff: number, colDiff: number): number[] => {
-    if (rowDiff === 0 && colDiff === 0) return [0, 0];
+  const findClosestDirection = (rowDiff: number, colDiff: number): Direction => {
+    if (rowDiff === 0 && colDiff === 0) return [0, 0]
 
     // Only allow "natural" reading directions
-    if (rowDiff === 0 && colDiff > 0) return [0, 1]; // right
-    if (rowDiff > 0 && colDiff === 0) return [1, 0]; // down
-    if (rowDiff > 0 && colDiff > 0 && Math.abs(rowDiff) === Math.abs(colDiff))
-      return [1, 1]; // diagonal down-right
-    if (rowDiff < 0 && colDiff > 0 && Math.abs(rowDiff) === Math.abs(colDiff))
-      return [-1, 1]; // diagonal up-right
+    if (rowDiff === 0 && colDiff > 0) return [0, 1] // right
+    if (rowDiff > 0 && colDiff === 0) return [1, 0] // down
+    if (rowDiff > 0 && colDiff > 0 && Math.abs(rowDiff) === Math.abs(colDiff)) return [1, 1] // diagonal down-right
+    if (rowDiff < 0 && colDiff > 0 && Math.abs(rowDiff) === Math.abs(colDiff)) return [-1, 1] // diagonal up-right
 
     // If not a natural direction, return null direction
-    return [0, 0];
-  };
+    return [0, 0]
+  }
 
   // Get cells along a standard direction
   const getCellsInDirection = (
     startRow: number,
     startCol: number,
-    direction: number[],
+    direction: Direction,
     endRow: number,
-    endCol: number
-  ) => {
-    const [dRow, dCol] = direction;
+    endCol: number,
+  ): Cell[] => {
+    const [dRow, dCol] = direction
 
     // If invalid direction, return just the start cell
     if (dRow === 0 && dCol === 0) {
-      return [[startRow, startCol]];
+      return [[startRow, startCol]]
     }
 
-    const cells: number[][] = [];
-    let currentRow = startRow;
-    let currentCol = startCol;
+    const cells: Cell[] = []
+    let currentRow = startRow
+    let currentCol = startCol
 
     // Calculate how far we should go in this direction
-    const maxSteps = GRID_SIZE; // Maximum grid size
+    const maxSteps = GRID_SIZE // Maximum grid size
 
     for (let i = 0; i <= maxSteps; i++) {
       // Add current cell
-      cells.push([currentRow, currentCol]);
+      cells.push([currentRow, currentCol])
 
       // If we've reached or passed the end position in this direction, stop
-      if (dRow > 0 && currentRow >= endRow) break;
-      if (dRow < 0 && currentRow <= endRow) break;
-      if (dCol > 0 && currentCol >= endCol) break;
-      if (dCol < 0 && currentCol <= endCol) break;
+      if (dRow > 0 && currentRow >= endRow) break
+      if (dRow < 0 && currentRow <= endRow) break
+      if (dCol > 0 && currentCol >= endCol) break
+      if (dCol < 0 && currentCol <= endCol) break
 
       // Move to next cell in this direction
-      currentRow += dRow;
-      currentCol += dCol;
+      currentRow += dRow
+      currentCol += dCol
 
       // Stop if we go out of bounds
-      if (
-        currentRow < 0 ||
-        currentRow >= GRID_SIZE ||
-        currentCol < 0 ||
-        currentCol >= GRID_SIZE
-      ) {
-        break;
+      if (currentRow < 0 || currentRow >= GRID_SIZE || currentCol < 0 || currentCol >= GRID_SIZE) {
+        break
       }
     }
 
-    return cells;
-  };
+    return cells
+  }
 
   // Handle cell selection start
   const handleCellMouseDown = (row: number, col: number) => {
-    setIsDragging(true);
-    setStartCell([row, col]);
-    setSelectedCells([[row, col]]);
-  };
+    setIsDragging(true)
+    setStartCell([row, col])
+    setSelectedCells([[row, col]])
+  }
 
   // Handle cell selection during drag
   const handleCellMouseEnter = (row: number, col: number) => {
-    if (!isDragging || startCell.length !== 2) return;
+    if (!isDragging || startCell.length !== 2) return
 
-    const [startRow, startCol] = startCell;
+    const [startRow, startCol] = startCell
 
     // Calculate row and column differences
-    const rowDiff = row - startRow;
-    const colDiff = col - startCol;
+    const rowDiff = row - startRow
+    const colDiff = col - startCol
 
     // Find the closest standard direction
-    const direction = findClosestDirection(rowDiff, colDiff);
+    const direction = findClosestDirection(rowDiff, colDiff)
 
     // Only update if we have a valid direction
     if (direction[0] !== 0 || direction[1] !== 0) {
-
       // Get cells along this direction
-      const cellsInDirection = getCellsInDirection(
-        startRow,
-        startCol,
-        direction,
-        row,
-        col
-      );
-      setSelectedCells(cellsInDirection);
+      const cellsInDirection = getCellsInDirection(startRow, startCol, direction, row, col)
+      setSelectedCells(cellsInDirection)
     }
-  };
+  }
 
   // Handle selection end
   const handleSelectionEnd = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
+    if (!isDragging) return
+    setIsDragging(false)
 
     // Only process if we have a valid selection (more than 1 cell)
     if (selectedCells.length > 1) {
       // Get the selected word
-      const selectedWord = selectedCells
-        .map(([row, col]) => grid[row][col])
-        .join("");
+      const selectedWord = selectedCells.map(([row, col]) => grid[row][col]).join("")
 
       // We only check for forward matches since we only allow natural reading directions
-      const isMatch =
-        WORD_LIST.includes(selectedWord) || selectedWord === BONUS_WORD;
+      const isMatch = ALL_VALID_WORDS.includes(selectedWord)
 
       if (isMatch && !foundWords.some((fw) => fw.word === selectedWord)) {
-        const isBonus = selectedWord === BONUS_WORD;
+        const isBonus = selectedWord === BONUS_WORD
+
+        // Calculate direction
+        const direction =
+          selectedCells.length > 1
+            ? [selectedCells[1][0] - selectedCells[0][0], selectedCells[1][1] - selectedCells[0][1]]
+            : [0, 0]
 
         setFoundWords([
           ...foundWords,
@@ -493,15 +364,16 @@ export default function MotsMeles() {
             word: selectedWord,
             cells: [...selectedCells],
             isBonus,
+            direction,
           },
-        ]);
+        ])
       }
     }
 
     // Clear selection
-    setSelectedCells([]);
-    setStartCell([]);
-  };
+    setSelectedCells([])
+    setStartCell([])
+  }
 
   // Trigger confetti celebration
   const triggerConfetti = () => {
@@ -510,53 +382,51 @@ export default function MotsMeles() {
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-      });
+      })
     }
-  };
+  }
 
   // Check if a cell is in the current selection
   const isCellSelected = (row: number, col: number) => {
-    return selectedCells.some(([r, c]) => r === row && c === col);
-  };
+    return selectedCells.some(([r, c]) => r === row && c === col)
+  }
 
   // Check if a cell is part of the bonus word
   const isCellInBonusWord = (row: number, col: number) => {
-    return foundWords.some(
-      (fw) => fw.isBonus && fw.cells.some(([r, c]) => r === row && c === col)
-    );
-  };
+    return foundWords.some((fw) => fw.isBonus && fw.cells.some(([r, c]) => r === row && c === col))
+  }
 
   // Calculate line coordinates for found words
   const getLineCoordinates = () => {
     const lines: {
-      x1: number;
-      y1: number;
-      x2: number;
-      y2: number;
-      word: string;
-    }[] = [];
-    const gridRect = gridRef.current?.getBoundingClientRect();
+      x1: number
+      y1: number
+      x2: number
+      y2: number
+      word: string
+    }[] = []
+    const gridRect = gridRef.current?.getBoundingClientRect()
 
-    if (!gridRect) return lines;
+    if (!gridRect) return lines
 
     // Only process non-bonus words
-    const nonBonusWords = foundWords.filter((fw) => !fw.isBonus);
+    const nonBonusWords = foundWords.filter((fw) => !fw.isBonus)
 
     for (const foundWord of nonBonusWords) {
-      if (foundWord.cells.length < 2) continue;
+      if (foundWord.cells.length < 2) continue
 
-      const startCell = foundWord.cells[0];
-      const endCell = foundWord.cells[foundWord.cells.length - 1];
+      const startCell = foundWord.cells[0]
+      const endCell = foundWord.cells[foundWord.cells.length - 1]
 
-      const startRect = cellRefs.current.get(`${startCell[0]},${startCell[1]}`);
-      const endRect = cellRefs.current.get(`${endCell[0]},${endCell[1]}`);
+      const startRect = cellRefs.current.get(`${startCell[0]},${startCell[1]}`)
+      const endRect = cellRefs.current.get(`${endCell[0]},${endCell[1]}`)
 
       if (startRect && endRect) {
         // Calculate center points relative to the grid
-        const startX = startRect.left + startRect.width / 2 - gridRect.left;
-        const startY = startRect.top + startRect.height / 2 - gridRect.top;
-        const endX = endRect.left + endRect.width / 2 - gridRect.left;
-        const endY = endRect.top + endRect.height / 2 - gridRect.top;
+        const startX = startRect.left + startRect.width / 2 - gridRect.left
+        const startY = startRect.top + startRect.height / 2 - gridRect.top
+        const endX = endRect.left + endRect.width / 2 - gridRect.left
+        const endY = endRect.top + endRect.height / 2 - gridRect.top
 
         lines.push({
           x1: startX,
@@ -564,12 +434,109 @@ export default function MotsMeles() {
           x2: endX,
           y2: endY,
           word: foundWord.word,
-        });
+        })
       }
     }
 
-    return lines;
-  };
+    return lines
+  }
+
+  // Get the path for the bonus word highlight
+  const getBonusWordHighlightPath = () => {
+    const foundBonusWord = foundWords.find((fw) => fw.isBonus)
+    if (!foundBonusWord || !gridRef.current || foundBonusWord.cells.length < 2) return null
+
+    const cells = foundBonusWord.cells
+    const gridRect = gridRef.current.getBoundingClientRect()
+    const direction = foundBonusWord.direction || [0, 0]
+
+    // Check if it's a diagonal word
+    const isDiagonal = Math.abs(direction[0]) === 1 && Math.abs(direction[1]) === 1
+
+    if (isDiagonal) {
+      // For diagonal words, create an angled rectangle
+      const firstCell = cells[0]
+      const lastCell = cells[cells.length - 1]
+
+      const firstCellRect = cellRefs.current.get(`${firstCell[0]},${firstCell[1]}`)
+      const lastCellRect = cellRefs.current.get(`${lastCell[0]},${lastCell[1]}`)
+
+      if (!firstCellRect || !lastCellRect) return null
+
+      // Calculate center points of first and last cells
+      const startX = firstCellRect.left + firstCellRect.width / 2 - gridRect.left
+      const startY = firstCellRect.top + firstCellRect.height / 2 - gridRect.top
+      const endX = lastCellRect.left + lastCellRect.width / 2 - gridRect.left
+      const endY = lastCellRect.top + lastCellRect.height / 2 - gridRect.top
+
+      // Calculate the width of the highlight (perpendicular to the word direction)
+      const cellWidth = firstCellRect.width
+      const highlightWidth = cellWidth * 0.7 // Slightly narrower than the cell
+
+      // Calculate the angle of the word
+      const angle = Math.atan2(endY - startY, endX - startX)
+
+      // Calculate the perpendicular angle
+      const perpAngle = angle + Math.PI / 2
+
+      // Calculate the four corners of the angled rectangle
+      const offsetX = (Math.cos(perpAngle) * highlightWidth) / 2
+      const offsetY = (Math.sin(perpAngle) * highlightWidth) / 2
+
+      // Extend the rectangle slightly beyond the first and last cells
+      const extensionFactor = 0.3 // How much to extend beyond the cells
+      const extendedStartX = startX - Math.cos(angle) * cellWidth * extensionFactor
+      const extendedStartY = startY - Math.sin(angle) * cellWidth * extensionFactor
+      const extendedEndX = endX + Math.cos(angle) * cellWidth * extensionFactor
+      const extendedEndY = endY + Math.sin(angle) * cellWidth * extensionFactor
+
+      // Calculate the four corners
+      const corner1X = extendedStartX - offsetX
+      const corner1Y = extendedStartY - offsetY
+      const corner2X = extendedStartX + offsetX
+      const corner2Y = extendedStartY + offsetY
+      const corner3X = extendedEndX + offsetX
+      const corner3Y = extendedEndY + offsetY
+      const corner4X = extendedEndX - offsetX
+      const corner4Y = extendedEndY - offsetY
+
+      return {
+        type: "polygon",
+        points: `${corner1X},${corner1Y} ${corner2X},${corner2Y} ${corner3X},${corner3Y} ${corner4X},${corner4Y}`,
+      }
+    } else {
+      // For horizontal or vertical words, use a regular rectangle with rounded corners
+      let minX = Number.POSITIVE_INFINITY,
+        minY = Number.POSITIVE_INFINITY,
+        maxX = Number.NEGATIVE_INFINITY,
+        maxY = Number.NEGATIVE_INFINITY
+
+      for (const [row, col] of cells) {
+        const cellRect = cellRefs.current.get(`${row},${col}`)
+        if (cellRect) {
+          const left = cellRect.left - gridRect.left
+          const top = cellRect.top - gridRect.top
+          const right = left + cellRect.width
+          const bottom = top + cellRect.height
+
+          minX = Math.min(minX, left)
+          minY = Math.min(minY, top)
+          maxX = Math.max(maxX, right)
+          maxY = Math.max(maxY, bottom)
+        }
+      }
+
+      // Add padding
+      const padding = 4
+      return {
+        type: "rect",
+        x: minX - padding,
+        y: minY - padding,
+        width: maxX - minX + padding * 2,
+        height: maxY - minY + padding * 2,
+      }
+    }
+  }
 
   return (
     <div className="flex flex-col items-center p-4 max-w-md mx-auto">
@@ -578,7 +545,7 @@ export default function MotsMeles() {
         <div className="relative">
           <div
             ref={gridRef}
-            className="grid grid-cols-9 touch-none border border-slate-600 rounded-md p-2 bg-muted/20"
+            className="grid grid-cols-10 touch-none border border-slate-600 rounded-md p-2 bg-muted/20"
             onMouseUp={handleSelectionEnd}
             onMouseLeave={handleSelectionEnd}
             onTouchEnd={handleSelectionEnd}
@@ -592,58 +559,66 @@ export default function MotsMeles() {
                     aspect-square w-8 h-8 md:w-10 md:h-10 flex items-center justify-center 
                     font-bold text-lg md:text-xl 
                     select-none cursor-pointer transition-colors
-                    ${
-                      isCellSelected(rowIndex, colIndex)
-                        ? "bg-slate-600 text-white"
-                        : "bg-transparent"
-                    }
-                    ${
-                      isCellInBonusWord(rowIndex, colIndex)
-                        ? "bg-green-100"
-                        : ""
-                    }
+                    ${isCellSelected(rowIndex, colIndex) ? "bg-slate-600 text-white" : "bg-transparent"}
                   `}
                   onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
                   onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
                   onTouchStart={() => handleCellMouseDown(rowIndex, colIndex)}
                   onTouchMove={(e) => {
-                    if (!gridRef.current || !isDragging) return;
+                    if (!gridRef.current || !isDragging) return
 
                     // Get touch position relative to grid
-                    const touch = e.touches[0];
-                    const gridRect = gridRef.current.getBoundingClientRect();
-                    const x = touch.clientX - gridRect.left;
-                    const y = touch.clientY - gridRect.top;
+                    const touch = e.touches[0]
+                    const gridRect = gridRef.current.getBoundingClientRect()
+                    const x = touch.clientX - gridRect.left
+                    const y = touch.clientY - gridRect.top
 
                     // Calculate which cell the touch is over
-                    const cellWidth = gridRect.width / GRID_SIZE;
-                    const cellHeight = gridRect.height / GRID_SIZE;
+                    const cellWidth = gridRect.width / GRID_SIZE
+                    const cellHeight = gridRect.height / GRID_SIZE
 
-                    const col = Math.floor(x / cellWidth);
-                    const row = Math.floor(y / cellHeight);
+                    const col = Math.floor(x / cellWidth)
+                    const row = Math.floor(y / cellHeight)
 
                     // Only process valid cells
-                    if (
-                      row >= 0 &&
-                      row < GRID_SIZE &&
-                      col >= 0 &&
-                      col < GRID_SIZE
-                    ) {
-                      handleCellMouseEnter(row, col);
+                    if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE) {
+                      handleCellMouseEnter(row, col)
                     }
                   }}
                 >
                   {letter}
                 </div>
-              ))
+              )),
             )}
           </div>
 
-          {/* SVG overlay for drawing lines */}
-          <svg
-            className="absolute top-0 left-0 w-full h-full pointer-events-none"
-            style={{ zIndex: 10 }}
-          >
+          {/* SVG overlay for drawing lines and bonus word highlight */}
+          <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 10 }}>
+            {/* Bonus word highlight */}
+            {foundWords.some((fw) => fw.isBonus) &&
+              getBonusWordHighlightPath() &&
+              (getBonusWordHighlightPath()?.type === "rect" ? (
+                <rect
+                  x={getBonusWordHighlightPath()?.x}
+                  y={getBonusWordHighlightPath()?.y}
+                  width={getBonusWordHighlightPath()?.width}
+                  height={getBonusWordHighlightPath()?.height}
+                  rx="8"
+                  ry="8"
+                  fill="rgba(134, 239, 172, 0.3)"
+                  stroke="rgba(22, 163, 74, 0.5)"
+                  strokeWidth="2"
+                />
+              ) : (
+                <polygon
+                  points={getBonusWordHighlightPath()?.points}
+                  fill="rgba(134, 239, 172, 0.3)"
+                  stroke="rgba(22, 163, 74, 0.5)"
+                  strokeWidth="2"
+                />
+              ))}
+
+            {/* Lines for found words */}
             {getLineCoordinates().map((line, index) => (
               <line
                 key={index}
@@ -660,5 +635,6 @@ export default function MotsMeles() {
         </div>
       </div>
     </div>
-  );
+  )
 }
+
