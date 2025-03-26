@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import confetti from "canvas-confetti"
 import { shuffle } from "lodash"
 import { placeWordsInGrid, type Cell, type Direction } from "../lib/placeWordsInGrid"
 import fr from "../lib/dictionnaries/fr"
+import { useAtom } from "jotai"
+import { hasWonMotMeleAtom } from "../core/atoms"
 
 // Sample word list - can be customized
 const WORD_LIST = shuffle([
@@ -151,11 +152,12 @@ const WORD_LIST = shuffle([
 const BONUS_WORD = "ROMANE" // Special bonus word
 
 
-const ALL_VALID_WORDS = [...fr, ...WORD_LIST, BONUS_WORD].filter((word) => word.length >= 2).sort()
+const ALL_VALID_WORDS = [...fr.split('\n').map(s => s.toUpperCase()), ...WORD_LIST, BONUS_WORD].filter((word) => word.length >= 2).sort()
 
 const GRID_SIZE = 10
 
 export default function MotsMeles() {
+  const [_, setHasWon] = useAtom(hasWonMotMeleAtom)
   const [grid, setGrid] = useState<string[][]>([])
   const [foundWords, setFoundWords] = useState<
     {
@@ -168,29 +170,28 @@ export default function MotsMeles() {
   const [selectedCells, setSelectedCells] = useState<Cell[]>([])
   const [startCell, setStartCell] = useState<Cell>([0,0])
   const [isDragging, setIsDragging] = useState(false)
-  const [bonusWordCells, setBonusWordCells] = useState<{
-    cells: Cell[]
-    direction: Direction
-  }>({ cells: [], direction: [0, 0] })
+
   const gridRef = useRef<HTMLDivElement>(null)
   const cellRefs = useRef<Map<string, DOMRect>>(new Map())
 
   // Initialize the game
   useEffect(() => {
+    setGrid(Array(GRID_SIZE)
+    .fill(null)
+    .map(() => Array(GRID_SIZE).fill("")))
     generateNewGame()
   }, [])
 
   // Check if game is won
   useEffect(() => {
-    if (foundWords.filter((fw) => !fw.isBonus).length === WORD_LIST.length || foundWords.some((fw) => fw.isBonus)) {
-      triggerConfetti()
+    if (foundWords.some((fw) => fw.isBonus)) {
+      setHasWon(true)
     }
   }, [foundWords])
 
   // Generate a new game with words placed in the grid
   const generateNewGame = () => {
     setFoundWords([])
-    setBonusWordCells({ cells: [], direction: [0, 0] })
 
     // Create empty GRID_SIZE grid
     const newGrid = Array(GRID_SIZE)
@@ -200,12 +201,7 @@ export default function MotsMeles() {
     // Place words in the grid
     const allWords = [BONUS_WORD, ...WORD_LIST]
     try {
-      const { bonusWordCells, bonusWordDirection, unplacedWords } = placeWordsInGrid(newGrid, allWords, GRID_SIZE)
-
-      setBonusWordCells({
-        cells: bonusWordCells,
-        direction: bonusWordDirection,
-      })
+      const { unplacedWords } = placeWordsInGrid(newGrid, allWords, GRID_SIZE)
 
       // Fill remaining cells with random letters
       for (let row = 0; row < GRID_SIZE; row++) {
@@ -375,26 +371,11 @@ export default function MotsMeles() {
     setStartCell([])
   }
 
-  // Trigger confetti celebration
-  const triggerConfetti = () => {
-    if (typeof window !== "undefined") {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      })
-    }
-  }
-
   // Check if a cell is in the current selection
   const isCellSelected = (row: number, col: number) => {
     return selectedCells.some(([r, c]) => r === row && c === col)
   }
 
-  // Check if a cell is part of the bonus word
-  const isCellInBonusWord = (row: number, col: number) => {
-    return foundWords.some((fw) => fw.isBonus && fw.cells.some(([r, c]) => r === row && c === col))
-  }
 
   // Calculate line coordinates for found words
   const getLineCoordinates = () => {

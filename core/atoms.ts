@@ -73,3 +73,5 @@ export const userCurrentGameRowKnownLettersAtom = atom<string>((get) => {
 
   return currentGameRowKnownLetters.join("");
 });
+
+export const hasWonMotMeleAtom = atom<boolean>(false)

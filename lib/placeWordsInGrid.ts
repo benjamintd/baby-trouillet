@@ -1,6 +1,6 @@
 // Types for word placement
 export type Direction = number[] // [rowDelta, colDelta]
-export type Cell = number[]// [row, col]
+export type Cell = number[] // [row, col]
 export type WordPlacement = {
   word: string
   startCell: Cell
@@ -162,17 +162,12 @@ export const scorePlacement = (
     // Favor intersections with existing words
     if (grid[row][col] === letter && grid[row][col] !== "") {
       intersections++
-      score += 5
+      score += 10
     }
 
     // Favor edge placements to maximize center space
     const distanceFromEdge = Math.min(row, col, gridSize - 1 - row, gridSize - 1 - col)
     score += distanceFromEdge === 0 ? 3 : 0
-  }
-
-  // Bonus for having exactly one intersection
-  if (intersections === 1) {
-    score += 10
   }
 
   // Penalize dead spaces
@@ -184,7 +179,7 @@ export const scorePlacement = (
     const [dRow, dCol] = placement.direction
     // Check if it's a diagonal direction
     if (Math.abs(dRow) === 1 && Math.abs(dCol) === 1) {
-      score += 25 // Significant bonus for diagonal placement of bonus word
+      score += 1000 // Significant bonus for diagonal placement of bonus word
     }
   }
 

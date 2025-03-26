@@ -1,17 +1,16 @@
 import { useAtom } from "jotai";
-import { RESET } from "jotai/utils";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ClientOnly from "../components/ClientOnly";
 import Confetti from "../components/Confetti";
-import GameGrid from "../components/GameGrid";
-import { gameAtom, hasWonAtom, validWordsAtom } from "../core/atoms";
+import { gameAtom, hasWonMotMeleAtom, validWordsAtom } from "../core/atoms";
 import { Submission } from "../models/Submission";
-import photo from "../public/photo.jpg";
+import photo from "../public/photobb2.png";
 import { hotjar } from "react-hotjar";
 import MotsMeles from "../components/MotsMeles";
+import { AnimatePresence, motion } from "motion/react";
 
 const Page = ({
   record,
@@ -24,7 +23,18 @@ const Page = ({
 }) => {
   const [_, setValidWords] = useAtom(validWordsAtom);
   const [game, setGame] = useAtom(gameAtom);
-  const [hasWon] = useAtom(hasWonAtom);
+  const [hasWon] = useAtom(hasWonMotMeleAtom);
+
+  // delayedHasWon is used to switch the view after the confetti animation
+  const [delayedHasWon, setDelayedHasWon] = useState(false);
+  useEffect(() => {
+    if (hasWon) {
+      setTimeout(() => {
+        setDelayedHasWon(true);
+      }, 1500);
+    }
+  }, [hasWon]);
+
   useEffect(() => {
     setValidWords(possibleNames);
     if (game === null) {
@@ -63,7 +73,8 @@ const Page = ({
         </h1>
         <ClientOnly>
           <p className="py-8 text-2xl text-sky-900">
-            Nous avons accueilli un nouveau membre dans la famille ! C'est un beau bébé qui pèse
+            Nous avons accueilli un nouveau membre dans la famille ! C'est un
+            beau bébé qui pèse
             <strong className="font-intro-bold">{` ${reveal.Poids} kg`}</strong>{" "}
             et mesure
             <strong className="font-intro-bold">{` ${reveal.Taille} cm`}</strong>
@@ -83,46 +94,67 @@ const Page = ({
             .
           </p>
 
-          {!hasWon && (
-            <div className="flex-col items-center justify-center w-full h-full">
-              <p className="mb-2 text-lg text-sky-900">
-                Pour trouver{" "}
-                <strong className="font-intro-bold">son prénom</strong>, il
-                faudra chercher dans cette grille ! 🧩
-              </p>
-              <p className="mb-4 text-sm text-sky-900">
-                Rayez les prénoms dans la grille (dans toutes les directions). Vous saurez quand vous aurez trouvé le bon 😉.
-              </p>
+          <AnimatePresence mode="wait">
+            {!delayedHasWon ? (
+              <motion.div
+                key="game"
+                initial={{ opacity: 1 }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.8,
+                  transition: {
+                    duration: 0.5,
+                  },
+                }}
+                className="flex-col items-center justify-center w-full h-full"
+              >
+                <p className="mb-2 text-lg text-sky-900">
+                  Pour trouver{" "}
+                  <strong className="font-intro-bold">son prénom</strong>, il
+                  faudra chercher dans cette grille ! 🧩
+                </p>
+                <p className="mb-4 text-sm text-sky-900">
+                  Rayez les prénoms dans la grille (dans toutes les directions).
+                  Vous saurez quand vous aurez trouvé le bon 😉.
+                </p>
 
-              <MotsMeles />
-            </div>
-          )}
-
-          {hasWon && (
-            <>
-              <p className="pb-8 text-2xl text-sky-900">
-                {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
-                <strong className="font-intro-bold">{reveal.Prénom}</strong> ❤️
-                et nous sommes comblés de bonheur !
-              </p>
-              <div className="relative w-full overflow-hidden rounded shadow aspect-video">
-                <Image
-                  layout="fill"
-                  objectFit="cover"
-                  src={photo}
-                  placeholder="blur"
-                />
-              </div>
-              <p className="mt-2 mb-8 text-gray-800 justify-self-end">
-                <button
-                  onClick={() => setGame(RESET)}
-                  className="border-b border-gray-800"
-                >
-                  Rejouer
-                </button>
-              </p>
-            </>
-          )}
+                <MotsMeles />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="reveal"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  scale: { type: "spring", damping: 15, stiffness: 100 },
+                }}
+              >
+                <p className="pb-8 text-2xl text-sky-900">
+                  {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
+                  <strong className="font-intro-bold">{reveal.Prénom}</strong>{" "}
+                  ❤️ et nous sommes comblés de bonheur !
+                </p>
+                <div className="relative w-full overflow-hidden rounded shadow aspect-video">
+                  <Image
+                    layout="fill"
+                    objectFit="cover"
+                    src={photo || "/placeholder.svg"}
+                    placeholder="blur"
+                    alt={`Photo de ${reveal.Prénom}`}
+                  />
+                </div>
+                <p className="mt-2 mb-8 text-gray-800 justify-self-end">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="border-b border-gray-800 hover:text-sky-700 hover:border-sky-700 transition-colors"
+                  >
+                    Rejouer
+                  </button>
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </ClientOnly>
 
         <Confetti />
