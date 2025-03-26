@@ -170,12 +170,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Romane",
-    Sexe: "F",
-    Poids: 3.23,
-    Taille: 51,
+    Prénom: "Dorian",
+    Sexe: "M",
+    Poids: 3.21,
+    Taille: 52,
     Cheveux: "Duvet",
-    DateDeNaissance: new Date(2022, 12 - 1, 3).toISOString(),
+    DateDeNaissance: new Date(2022, 5 - 1, 27).toISOString(),
     HeureDeNaissance: "7:11",
   };
 
