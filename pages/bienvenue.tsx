@@ -170,7 +170,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Dorian",
+    Prénom: "Lucas",
     Sexe: "M",
     Poids: 3.21,
     Taille: 52,
