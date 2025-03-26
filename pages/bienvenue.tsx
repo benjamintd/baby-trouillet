@@ -118,7 +118,7 @@ const Page = ({
                   Vous saurez quand vous aurez trouvé le bon 😉.
                 </p>
 
-                <MotsMeles />
+                <MotsMeles bonusWord={reveal.Prénom.toUpperCase()} />
               </motion.div>
             ) : (
               <motion.div

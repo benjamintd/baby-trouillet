@@ -85,7 +85,6 @@ const WORD_LIST = shuffle([
   "LOUIS",
   "RAPHAEL",
   "JULES",
-  "LUCAS",
   "ADAM",
   "ARTHUR",
   "HUGO",
@@ -147,16 +146,12 @@ const WORD_LIST = shuffle([
   "ANTONIN",
 ])
 
-
-
-const BONUS_WORD = "ROMANE" // Special bonus word
-
-
-const ALL_VALID_WORDS = [...fr.split('\n').map(s => s.toUpperCase()), ...WORD_LIST, BONUS_WORD].filter((word) => word.length >= 2).sort()
-
 const GRID_SIZE = 10
 
-export default function MotsMeles() {
+export default function MotsMeles({bonusWord}: {bonusWord: string}) {
+
+  const ALL_VALID_WORDS = [...fr.split('\n').map(s => s.toUpperCase()), ...WORD_LIST, bonusWord].filter((word) => word.length >= 2).sort()
+
   const [_, setHasWon] = useAtom(hasWonMotMeleAtom)
   const [grid, setGrid] = useState<string[][]>([])
   const [foundWords, setFoundWords] = useState<
@@ -199,7 +194,7 @@ export default function MotsMeles() {
       .map(() => Array(GRID_SIZE).fill(""))
 
     // Place words in the grid
-    const allWords = [BONUS_WORD, ...WORD_LIST]
+    const allWords = [bonusWord, ...WORD_LIST]
     try {
       const { unplacedWords } = placeWordsInGrid(newGrid, allWords, GRID_SIZE)
 
@@ -346,7 +341,7 @@ export default function MotsMeles() {
       const isMatch = ALL_VALID_WORDS.includes(selectedWord)
 
       if (isMatch && !foundWords.some((fw) => fw.word === selectedWord)) {
-        const isBonus = selectedWord === BONUS_WORD
+        const isBonus = selectedWord === bonusWord
 
         // Calculate direction
         const direction =
