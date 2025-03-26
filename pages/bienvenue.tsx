@@ -12,6 +12,28 @@ import { hotjar } from "react-hotjar";
 import MotsMeles from "../components/MotsMeles";
 import { AnimatePresence, motion } from "motion/react";
 
+export const getServerSideProps: GetServerSideProps = async () => {
+  const reveal: Submission = {
+    Nom: "",
+    Email: "",
+    Adresse: "",
+    Prénom: "Django",
+    Sexe: "M",
+    Poids: 3.21,
+    Taille: 52,
+    Cheveux: "Duvet",
+    DateDeNaissance: new Date(2022, 5 - 1, 27).toISOString(),
+    HeureDeNaissance: "7:11",
+  };
+
+  return {
+    props: {
+      reveal,
+    },
+  };
+};
+
+
 const Page = ({
   record,
   reveal,
@@ -96,30 +118,30 @@ const Page = ({
 
           <AnimatePresence mode="wait">
             {!delayedHasWon ? (
-              <motion.div
+                <motion.div
                 key="game"
                 initial={{ opacity: 1 }}
                 exit={{
                   opacity: 0,
                   scale: 0.8,
                   transition: {
-                    duration: 0.5,
+                  duration: 0.5,
                   },
                 }}
                 className="flex-col items-center justify-center w-full h-full"
-              >
+                >
                 <p className="mb-2 text-lg text-sky-900">
                   Pour trouver{" "}
-                  <strong className="font-intro-bold">son prénom</strong>, il
+                  <strong className="font-intro-bold">son prenom</strong>, il
                   faudra chercher dans cette grille ! 🧩
                 </p>
                 <p className="mb-4 text-sm text-sky-900">
-                  Rayez les prénoms dans la grille (dans toutes les directions).
-                  Vous saurez quand vous aurez trouvé le bon 😉.
+                  Rayez les prenoms dans la grille (dans toutes les directions).
+                  Vous saurez quand vous aurez trouve le bon 😉.
                 </p>
 
-                <MotsMeles bonusWord={reveal.Prénom.toUpperCase()} />
-              </motion.div>
+                <MotsMeles bonusWord={reveal.Prénom.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")} />
+                </motion.div>
             ) : (
               <motion.div
                 key="reveal"
@@ -165,23 +187,3 @@ const Page = ({
 
 export default Page;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const reveal: Submission = {
-    Nom: "",
-    Email: "",
-    Adresse: "",
-    Prénom: "Lucas",
-    Sexe: "M",
-    Poids: 3.21,
-    Taille: 52,
-    Cheveux: "Duvet",
-    DateDeNaissance: new Date(2022, 5 - 1, 27).toISOString(),
-    HeureDeNaissance: "7:11",
-  };
-
-  return {
-    props: {
-      reveal,
-    },
-  };
-};

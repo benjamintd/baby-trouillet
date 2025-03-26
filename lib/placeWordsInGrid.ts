@@ -179,7 +179,7 @@ export const scorePlacement = (
     const [dRow, dCol] = placement.direction
     // Check if it's a diagonal direction
     if (Math.abs(dRow) === 1 && Math.abs(dCol) === 1) {
-      score += 1000 // Significant bonus for diagonal placement of bonus word
+      score += 10000 // Significant bonus for diagonal placement of bonus word
     }
   }
 
@@ -246,7 +246,6 @@ export const placeWord = (
   word: string,
   startCell: Cell,
   direction: Direction,
-  isBonus: boolean,
 ): Cell[] => {
   const [startRow, startCol] = startCell
   const [dRow, dCol] = direction
@@ -399,7 +398,7 @@ export const placeWordsInGrid = (
       )
 
       // Place the word in the grid
-      const wordCells = placeWord(grid, word, bestPlacement.startCell, bestPlacement.direction, isBonus)
+      const wordCells = placeWord(grid, word, bestPlacement.startCell, bestPlacement.direction)
 
       // If this is the bonus word, track its cells
       if (isBonus) {

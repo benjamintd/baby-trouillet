@@ -1,11 +1,21 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect, useRef } from "react"
 import { shuffle } from "lodash"
 import { placeWordsInGrid, type Cell, type Direction } from "../lib/placeWordsInGrid"
 import fr from "../lib/dictionnaries/fr"
 import { useAtom } from "jotai"
 import { hasWonMotMeleAtom } from "../core/atoms"
+
+// Only "natural" reading directions
+const DIRECTIONS: Direction[] = [
+  [0, 1], // right
+  [1, 0], // down
+  [1, 1], // diagonal down-right
+  [-1, 1], // diagonal up-right
+]
 
 // Sample word list - can be customized
 const WORD_LIST = shuffle([
@@ -148,9 +158,10 @@ const WORD_LIST = shuffle([
 
 const GRID_SIZE = 10
 
-export default function MotsMeles({bonusWord}: {bonusWord: string}) {
-
-  const ALL_VALID_WORDS = [...fr.split('\n').map(s => s.toUpperCase()), ...WORD_LIST, bonusWord].filter((word) => word.length >= 2).sort()
+export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
+  const ALL_VALID_WORDS = [...fr.split("\n").map((s) => s.toUpperCase()), ...WORD_LIST, bonusWord]
+    .filter((word) => word.length >= 2)
+    .sort()
 
   const [_, setHasWon] = useAtom(hasWonMotMeleAtom)
   const [grid, setGrid] = useState<string[][]>([])
@@ -163,17 +174,20 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
     }[]
   >([])
   const [selectedCells, setSelectedCells] = useState<Cell[]>([])
-  const [startCell, setStartCell] = useState<Cell>([0,0])
+  const [startCell, setStartCell] = useState<Cell>([0, 0])
   const [isDragging, setIsDragging] = useState(false)
+  const [currentEndCell, setCurrentEndCell] = useState<Cell | null>(null)
 
   const gridRef = useRef<HTMLDivElement>(null)
   const cellRefs = useRef<Map<string, DOMRect>>(new Map())
 
   // Initialize the game
   useEffect(() => {
-    setGrid(Array(GRID_SIZE)
-    .fill(null)
-    .map(() => Array(GRID_SIZE).fill("")))
+    setGrid(
+      Array(GRID_SIZE)
+        .fill(null)
+        .map(() => Array(GRID_SIZE).fill("")),
+    )
     generateNewGame()
   }, [])
 
@@ -182,7 +196,7 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
     if (foundWords.some((fw) => fw.isBonus)) {
       setHasWon(true)
     }
-  }, [foundWords])
+  }, [foundWords, setHasWon])
 
   // Generate a new game with words placed in the grid
   const generateNewGame = () => {
@@ -240,33 +254,84 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
     }
   }
 
-  // Find the closest standard direction
-  const findClosestDirection = (rowDiff: number, colDiff: number): Direction => {
-    if (rowDiff === 0 && colDiff === 0) return [0, 0]
+  // Find the best direction based on start and end cells
+  const findBestDirection = (startCell: Cell, endCell: Cell): { direction: Direction; endCell: Cell } => {
+    const [startRow, startCol] = startCell
+    const [endRow, endCol] = endCell
 
-    // Only allow "natural" reading directions
-    if (rowDiff === 0 && colDiff > 0) return [0, 1] // right
-    if (rowDiff > 0 && colDiff === 0) return [1, 0] // down
-    if (rowDiff > 0 && colDiff > 0 && Math.abs(rowDiff) === Math.abs(colDiff)) return [1, 1] // diagonal down-right
-    if (rowDiff < 0 && colDiff > 0 && Math.abs(rowDiff) === Math.abs(colDiff)) return [-1, 1] // diagonal up-right
+    // Calculate row and column differences
+    const rowDiff = endRow - startRow
+    const colDiff = endCol - startCol
 
-    // If not a natural direction, return null direction
-    return [0, 0]
+    // If it's already a standard direction, return it
+    if (
+      (rowDiff === 0 && colDiff !== 0) || // horizontal
+      (colDiff === 0 && rowDiff !== 0) || // vertical
+      (Math.abs(rowDiff) === Math.abs(colDiff) && rowDiff !== 0 && colDiff !== 0) // diagonal
+    ) {
+      // Normalize the direction
+      const dRow = rowDiff === 0 ? 0 : rowDiff > 0 ? 1 : -1
+      const dCol = colDiff === 0 ? 0 : colDiff > 0 ? 1 : -1
+      return { direction: [dRow, dCol], endCell }
+    }
+
+    // Calculate the angle of the line from start to end
+    const angle = Math.atan2(rowDiff, colDiff)
+
+    // Find the closest standard direction based on angle
+    let bestDirection: Direction = [0, 0]
+    let minAngleDiff = Math.PI
+
+    for (const dir of DIRECTIONS) {
+      const dirAngle = Math.atan2(dir[0], dir[1])
+      const angleDiff = Math.abs(angle - dirAngle)
+
+      // Normalize angle difference to be between 0 and PI
+      const normalizedAngleDiff = Math.min(angleDiff, 2 * Math.PI - angleDiff)
+
+      if (normalizedAngleDiff < minAngleDiff) {
+        minAngleDiff = normalizedAngleDiff
+        bestDirection = dir
+      }
+    }
+
+    // Calculate the projected end cell based on the best direction
+    // We want to go as far as possible in the best direction while staying within bounds
+    const [dRow, dCol] = bestDirection
+
+    // Calculate how far we can go in this direction
+    const distance = Math.max(Math.abs(rowDiff), Math.abs(colDiff))
+
+    // Calculate the new end cell
+    let newEndRow = startRow
+    let newEndCol = startCol
+
+    // Find the furthest valid cell in this direction
+    for (let i = 1; i <= distance; i++) {
+      const nextRow = startRow + i * dRow
+      const nextCol = startCol + i * dCol
+
+      // Stop if we go out of bounds
+      if (nextRow < 0 || nextRow >= GRID_SIZE || nextCol < 0 || nextCol >= GRID_SIZE) {
+        break
+      }
+
+      newEndRow = nextRow
+      newEndCol = nextCol
+    }
+
+    return { direction: bestDirection, endCell: [newEndRow, newEndCol] }
   }
 
   // Get cells along a standard direction
-  const getCellsInDirection = (
-    startRow: number,
-    startCol: number,
-    direction: Direction,
-    endRow: number,
-    endCol: number,
-  ): Cell[] => {
+  const getCellsInDirection = (startCell: Cell, direction: Direction, endCell: Cell): Cell[] => {
+    const [startRow, startCol] = startCell
     const [dRow, dCol] = direction
+    const [endRow, endCol] = endCell
 
     // If invalid direction, return just the start cell
     if (dRow === 0 && dCol === 0) {
-      return [[startRow, startCol]]
+      return [startCell]
     }
 
     const cells: Cell[] = []
@@ -304,25 +369,23 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
     setIsDragging(true)
     setStartCell([row, col])
     setSelectedCells([[row, col]])
+    setCurrentEndCell(null)
   }
 
   // Handle cell selection during drag
   const handleCellMouseEnter = (row: number, col: number) => {
     if (!isDragging || startCell.length !== 2) return
 
-    const [startRow, startCol] = startCell
+    // Update the current end cell
+    setCurrentEndCell([row, col])
 
-    // Calculate row and column differences
-    const rowDiff = row - startRow
-    const colDiff = col - startCol
-
-    // Find the closest standard direction
-    const direction = findClosestDirection(rowDiff, colDiff)
+    // Find the best direction and projected end cell
+    const { direction, endCell } = findBestDirection(startCell, [row, col])
 
     // Only update if we have a valid direction
     if (direction[0] !== 0 || direction[1] !== 0) {
       // Get cells along this direction
-      const cellsInDirection = getCellsInDirection(startRow, startCol, direction, row, col)
+      const cellsInDirection = getCellsInDirection(startCell, direction, endCell)
       setSelectedCells(cellsInDirection)
     }
   }
@@ -331,6 +394,7 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
   const handleSelectionEnd = () => {
     if (!isDragging) return
     setIsDragging(false)
+    setCurrentEndCell(null)
 
     // Only process if we have a valid selection (more than 1 cell)
     if (selectedCells.length > 1) {
@@ -370,7 +434,6 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
   const isCellSelected = (row: number, col: number) => {
     return selectedCells.some(([r, c]) => r === row && c === col)
   }
-
 
   // Calculate line coordinates for found words
   const getLineCoordinates = () => {
@@ -514,6 +577,32 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
     }
   }
 
+  // Improved touch handling function
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!gridRef.current || !isDragging) return
+
+    // Prevent scrolling while dragging
+    e.preventDefault()
+
+    // Get touch position relative to grid
+    const touch = e.touches[0]
+    const gridRect = gridRef.current.getBoundingClientRect()
+    const x = touch.clientX - gridRect.left
+    const y = touch.clientY - gridRect.top
+
+    // Calculate which cell the touch is over
+    const cellWidth = gridRect.width / GRID_SIZE
+    const cellHeight = gridRect.height / GRID_SIZE
+
+    const col = Math.floor(x / cellWidth)
+    const row = Math.floor(y / cellHeight)
+
+    // Only process valid cells
+    if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE) {
+      handleCellMouseEnter(row, col)
+    }
+  }
+
   return (
     <div className="flex flex-col items-center p-4 max-w-md mx-auto">
       <div className="flex justify-center w-full">
@@ -525,6 +614,7 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
             onMouseUp={handleSelectionEnd}
             onMouseLeave={handleSelectionEnd}
             onTouchEnd={handleSelectionEnd}
+            onTouchCancel={handleSelectionEnd}
           >
             {grid.map((row, rowIndex) =>
               row.map((letter, colIndex) => (
@@ -536,31 +626,15 @@ export default function MotsMeles({bonusWord}: {bonusWord: string}) {
                     font-bold text-lg md:text-xl 
                     select-none cursor-pointer transition-colors
                     ${isCellSelected(rowIndex, colIndex) ? "bg-slate-600 text-white" : "bg-transparent"}
+                    touch-manipulation
                   `}
                   onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
                   onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
-                  onTouchStart={() => handleCellMouseDown(rowIndex, colIndex)}
-                  onTouchMove={(e) => {
-                    if (!gridRef.current || !isDragging) return
-
-                    // Get touch position relative to grid
-                    const touch = e.touches[0]
-                    const gridRect = gridRef.current.getBoundingClientRect()
-                    const x = touch.clientX - gridRect.left
-                    const y = touch.clientY - gridRect.top
-
-                    // Calculate which cell the touch is over
-                    const cellWidth = gridRect.width / GRID_SIZE
-                    const cellHeight = gridRect.height / GRID_SIZE
-
-                    const col = Math.floor(x / cellWidth)
-                    const row = Math.floor(y / cellHeight)
-
-                    // Only process valid cells
-                    if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE) {
-                      handleCellMouseEnter(row, col)
-                    }
+                  onTouchStart={(e) => {
+                    e.preventDefault() // Prevent double-tap zoom
+                    handleCellMouseDown(rowIndex, colIndex)
                   }}
+                  onTouchMove={handleTouchMove}
                 >
                   {letter}
                 </div>
