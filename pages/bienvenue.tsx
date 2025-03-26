@@ -17,10 +17,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Django",
-    Sexe: "M",
+    Prénom: "Sarah",
+    Sexe: "F",
     Poids: 3.21,
-    Taille: 52,
+    Taille: 51,
     Cheveux: "Duvet",
     DateDeNaissance: new Date(2022, 5 - 1, 27).toISOString(),
     HeureDeNaissance: "7:11",
@@ -89,9 +89,9 @@ const Page = ({
         />
       </Head>
 
-      <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
+      <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-3xl px-6 text-center md:px-12">
         <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
-          👋 La famille s'agrandit !
+          👋 La famille s'agrandit&nbsp;!
         </h1>
         <ClientOnly>
           <p className="py-8 text-2xl text-sky-900">
@@ -100,9 +100,7 @@ const Page = ({
             <strong className="font-intro-bold">{` ${reveal.Poids} kg`}</strong>{" "}
             et mesure
             <strong className="font-intro-bold">{` ${reveal.Taille} cm`}</strong>
-            .
-            <br />
-            Nous lui avons dit bonjour le{" "}
+            , et qui a vu le jour le{" "}
             <strong className="font-intro-bold">
               {new Date(reveal.DateDeNaissance).toLocaleDateString("fr-FR", {
                 day: "numeric",
@@ -132,12 +130,12 @@ const Page = ({
                 >
                 <p className="mb-2 text-lg text-sky-900">
                   Pour trouver{" "}
-                  <strong className="font-intro-bold">son prenom</strong>, il
+                  <strong className="font-intro-bold">son prénom</strong>, il
                   faudra chercher dans cette grille ! 🧩
                 </p>
-                <p className="mb-4 text-sm text-sky-900">
-                  Rayez les prenoms dans la grille (dans toutes les directions).
-                  Vous saurez quand vous aurez trouve le bon 😉.
+                <p className="mb-4 text-sky-900">
+                  Rayez les prénoms dans la grille (dans toutes les directions).
+                  Vous saurez quand vous aurez trouvé le bon 😉.
                 </p>
 
                 <MotsMeles bonusWord={reveal.Prénom.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")} />

@@ -62,7 +62,6 @@ const WORD_LIST = shuffle([
   "CLARA",
   "ALIX",
   "CAPUCINE",
-  "GABRIELLE",
   "LYNA",
   "MAELYS",
   "MATHILDE",
@@ -70,7 +69,6 @@ const WORD_LIST = shuffle([
   "ANAIS",
   "LILOU",
   "APOLLINE",
-  "LISE",
   "ELISE",
   "MARIA",
   "VALENTINE",
@@ -91,6 +89,7 @@ const WORD_LIST = shuffle([
   "MAELLE",
   "MELINA",
   "GABRIEL",
+  "MARC",
   "LEO",
   "LOUIS",
   "RAPHAEL",
@@ -98,20 +97,14 @@ const WORD_LIST = shuffle([
   "ADAM",
   "ARTHUR",
   "HUGO",
-  "MAEL",
-  "LIAM",
   "ETHAN",
   "NATHAN",
   "PAUL",
   "SACHA",
   "GABIN",
   "TOM",
-  "NOLAN",
-  "AARON",
   "THEO",
-  "ENZO",
   "MATHIS",
-  "TIMEO",
   "VICTOR",
   "AXEL",
   "MARTIN",
@@ -119,26 +112,20 @@ const WORD_LIST = shuffle([
   "ANTOINE",
   "MARIUS",
   "ROBIN",
-  "VALENTIN",
   "NAEL",
   "BAPTISTE",
   "MAXIME",
   "SAMUEL",
   "ELIOTT",
-  "AUGUSTIN",
   "MAXENCE",
-  "NINO",
   "MALO",
   "MATHEO",
   "GASPARD",
   "MARCEAU",
   "EVAN",
   "SIMON",
-  "ALEXANDRE",
   "AYDEN",
-  "AMIR",
   "THOMAS",
-  "LENNY",
   "OSCAR",
   "ALEXIS",
   "LEANDRE",
@@ -154,6 +141,7 @@ const WORD_LIST = shuffle([
   "BASILE",
   "JEAN",
   "ANTONIN",
+  "TITOUAN"
 ])
 
 const GRID_SIZE = 10
@@ -176,7 +164,6 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
   const [selectedCells, setSelectedCells] = useState<Cell[]>([])
   const [startCell, setStartCell] = useState<Cell>([0, 0])
   const [isDragging, setIsDragging] = useState(false)
-  const [currentEndCell, setCurrentEndCell] = useState<Cell | null>(null)
 
   const gridRef = useRef<HTMLDivElement>(null)
   const cellRefs = useRef<Map<string, DOMRect>>(new Map())
@@ -369,15 +356,11 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
     setIsDragging(true)
     setStartCell([row, col])
     setSelectedCells([[row, col]])
-    setCurrentEndCell(null)
   }
 
   // Handle cell selection during drag
   const handleCellMouseEnter = (row: number, col: number) => {
     if (!isDragging || startCell.length !== 2) return
-
-    // Update the current end cell
-    setCurrentEndCell([row, col])
 
     // Find the best direction and projected end cell
     const { direction, endCell } = findBestDirection(startCell, [row, col])
@@ -394,7 +377,6 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
   const handleSelectionEnd = () => {
     if (!isDragging) return
     setIsDragging(false)
-    setCurrentEndCell(null)
 
     // Only process if we have a valid selection (more than 1 cell)
     if (selectedCells.length > 1) {
