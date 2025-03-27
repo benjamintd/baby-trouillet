@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
-import { shuffle } from "lodash"
+import { shuffle, sortBy } from "lodash"
 import { placeWordsInGrid, type Cell, type Direction } from "../lib/placeWordsInGrid"
 import fr from "../lib/dictionnaries/fr"
 import { useAtom } from "jotai"
@@ -18,7 +18,7 @@ const DIRECTIONS: Direction[] = [
 ]
 
 // Sample word list - can be customized
-const WORD_LIST = shuffle([
+const WORD_LIST = sortBy([
   "EMMA",
   "LOUISE",
   "JADE",
@@ -142,7 +142,7 @@ const WORD_LIST = shuffle([
   "JEAN",
   "ANTONIN",
   "TITOUAN"
-])
+], s => -(s.length + 10 * Math.random())) // bias towards longer words first with some randomness
 
 const GRID_SIZE = 10
 
