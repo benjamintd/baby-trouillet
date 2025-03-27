@@ -1,3 +1,5 @@
+import { rng } from "./random";
+
 // Types for word placement
 export type Direction = number[]; // [rowDelta, colDelta]
 export type Cell = number[]; // [row, col]
@@ -20,6 +22,16 @@ export const DIRECTIONS: Direction[] = [
 export const isInBounds = (cell: Cell, gridSize: number): boolean => {
   const [row, col] = cell;
   return row >= 0 && row < gridSize && col >= 0 && col < gridSize;
+};
+
+
+// Seeded shuffle function
+export const shuffle = <T>(array: T[]): T[] => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 };
 
 // Get all cells in a specific direction from a starting cell
@@ -313,10 +325,7 @@ export const findBestPlacement = (
   }
   // For the bonus word, shuffle the cells to avoid always starting at [0,0]
   if (isBonus) {
-    for (let i = cells.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cells[i], cells[j]] = [cells[j], cells[i]];
-    }
+    cells = shuffle(cells);
   }
 
   // Iterate over the list of cells (shuffled for bonus word)

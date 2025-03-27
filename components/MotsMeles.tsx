@@ -3,11 +3,12 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
-import { shuffle, sortBy } from "lodash"
+import {  sortBy } from "lodash"
 import { placeWordsInGrid, type Cell, type Direction } from "../lib/placeWordsInGrid"
 import fr from "../lib/dictionnaries/fr"
 import { useAtom } from "jotai"
 import { hasWonMotMeleAtom } from "../core/atoms"
+import { rng } from "../lib/random"
 
 // Only "natural" reading directions
 const DIRECTIONS: Direction[] = [
@@ -142,7 +143,7 @@ const WORD_LIST = sortBy([
   "JEAN",
   "ANTONIN",
   "TITOUAN"
-], s => -(s.length + 20 * Math.random())) // bias towards longer words first with some randomness
+], s => -(s.length + 30 * rng())) // bias towards longer words first with some randomness
 
 const GRID_SIZE = 10
 
@@ -203,7 +204,7 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
       for (let row = 0; row < GRID_SIZE; row++) {
         for (let col = 0; col < GRID_SIZE; col++) {
           if (newGrid[row][col] === "") {
-            newGrid[row][col] = String.fromCharCode(65 + Math.floor(Math.random() * 26))
+            newGrid[row][col] = String.fromCharCode(65 + Math.floor(rng() * 26))
           }
         }
       }
@@ -223,7 +224,7 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
         .map(() =>
           Array(GRID_SIZE)
             .fill("")
-            .map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26))),
+            .map(() => String.fromCharCode(65 + Math.floor(rng() * 26))),
         )
 
       setGrid(fallbackGrid)
