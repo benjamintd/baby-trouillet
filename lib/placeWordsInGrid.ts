@@ -1,190 +1,196 @@
 // Types for word placement
-export type Direction = number[] // [rowDelta, colDelta]
-export type Cell = number[] // [row, col]
+export type Direction = number[]; // [rowDelta, colDelta]
+export type Cell = number[]; // [row, col]
 export type WordPlacement = {
-  word: string
-  startCell: Cell
-  direction: Direction
-  cells: Cell[]
-}
+  word: string;
+  startCell: Cell;
+  direction: Direction;
+  cells: Cell[];
+};
 
 // Constants
 export const DIRECTIONS: Direction[] = [
   [1, 1], // diagonal down-right
   [-1, 1], // diagonal up-right
-  [0, 1], // right
-  [1, 0], // down
-]
+  [0, 1], // right (non-diagonal)
+  [1, 0], // down (non-diagonal)
+];
 
 // Check if a cell is within grid bounds
 export const isInBounds = (cell: Cell, gridSize: number): boolean => {
-  const [row, col] = cell
-  return row >= 0 && row < gridSize && col >= 0 && col < gridSize
-}
+  const [row, col] = cell;
+  return row >= 0 && row < gridSize && col >= 0 && col < gridSize;
+};
 
 // Get all cells in a specific direction from a starting cell
 export const getCellsInDirection = (
   startCell: Cell,
   direction: Direction,
   length: number,
-  gridSize: number,
+  gridSize: number
 ): Cell[] => {
-  const cells: Cell[] = []
-  const [startRow, startCol] = startCell
-  const [dRow, dCol] = direction
+  const cells: Cell[] = [];
+  const [startRow, startCol] = startCell;
+  const [dRow, dCol] = direction;
 
   for (let i = 0; i < length; i++) {
-    const row = startRow + i * dRow
-    const col = startCol + i * dCol
+    const row = startRow + i * dRow;
+    const col = startCol + i * dCol;
 
     if (!isInBounds([row, col], gridSize)) {
-      break
+      break;
     }
 
-    cells.push([row, col])
+    cells.push([row, col]);
   }
 
-  return cells
-}
+  return cells;
+};
 
-// Check if a cell has potential to be part of a 4+ letter word in any direction
-export const hasPotentialForWord = (grid: string[][], cell: Cell, gridSize: number): boolean => {
-  const [row, col] = cell
+// Check if a cell has potential to be part of a 3+ letter word in any direction
+export const hasPotentialForWord = (
+  grid: string[][],
+  cell: Cell,
+  gridSize: number
+): boolean => {
+  const [row, col] = cell;
 
-  // Skip if cell is already filled
+  // If already filled, consider it as having potential
   if (grid[row][col] !== "") {
-    return true
+    return true;
   }
 
-  // Check each direction for potential 4+ letter word
+  // Check each direction
   for (const direction of DIRECTIONS) {
-    // Check forward
-    let forwardCount = 0
-    let currentRow = row
-    let currentCol = col
-
+    let count = 1; // include the cell itself
+    // Look forward
+    let currentRow = row + direction[0];
+    let currentCol = col + direction[1];
     while (
       isInBounds([currentRow, currentCol], gridSize) &&
-      (grid[currentRow][currentCol] === "" || [row, col].toString() === [currentRow, currentCol].toString()) &&
-      forwardCount < 4
+      grid[currentRow][currentCol] === ""
     ) {
-      forwardCount++
-      currentRow += direction[0]
-      currentCol += direction[1]
+      count++;
+      currentRow += direction[0];
+      currentCol += direction[1];
     }
-
-    // Check backward
-    let backwardCount = 0
-    currentRow = row - direction[0]
-    currentCol = col - direction[1]
-
-    while (isInBounds([currentRow, currentCol], gridSize) && grid[currentRow][currentCol] === "" && backwardCount < 3) {
-      backwardCount++
-      currentRow -= direction[0]
-      currentCol -= direction[1]
+    // Look backward
+    currentRow = row - direction[0];
+    currentCol = col - direction[1];
+    while (
+      isInBounds([currentRow, currentCol], gridSize) &&
+      grid[currentRow][currentCol] === ""
+    ) {
+      count++;
+      currentRow -= direction[0];
+      currentCol -= direction[1];
     }
-
-    // If total potential length is at least 4, this cell has potential
-    if (forwardCount + backwardCount >= 4) {
-      return true
+    if (count >= 3) {
+      return true;
     }
   }
 
-  return false
-}
+  return false;
+};
 
 // Count dead spaces created by a word placement
-export const countDeadSpaces = (grid: string[][], placement: WordPlacement, gridSize: number): number => {
-  // Create a temporary grid with the word placed
-  const tempGrid = grid.map((row) => [...row])
+export const countDeadSpaces = (
+  grid: string[][],
+  placement: WordPlacement,
+  gridSize: number
+): number => {
+  // Create a temporary copy of the grid
+  const tempGrid = grid.map((row) => [...row]);
 
   // Place the word in the temporary grid
   for (const [row, col] of placement.cells) {
-    const index = placement.cells.findIndex((cell) => cell[0] === row && cell[1] === col)
-    tempGrid[row][col] = placement.word[index]
+    const index = placement.cells.findIndex(
+      (cell) => cell[0] === row && cell[1] === col
+    );
+    tempGrid[row][col] = placement.word[index];
   }
 
-  // Count cells that would become dead spaces
-  let deadSpaces = 0
+  let deadSpaces = 0;
+  const checkedCells = new Set<string>();
 
-  // Check cells adjacent to the word placement
-  const checkedCells = new Set<string>()
-
+  // Check all cells adjacent to the placement for dead space potential
   for (const [row, col] of placement.cells) {
-    // Check all 8 adjacent cells
     for (let dr = -1; dr <= 1; dr++) {
       for (let dc = -1; dc <= 1; dc++) {
-        if (dr === 0 && dc === 0) continue
+        if (dr === 0 && dc === 0) continue;
 
-        const adjacentRow = row + dr
-        const adjacentCol = col + dc
-        const cellKey = `${adjacentRow},${adjacentCol}`
+        const adjacentRow = row + dr;
+        const adjacentCol = col + dc;
+        const cellKey = `${adjacentRow},${adjacentCol}`;
 
-        // Skip if already checked or out of bounds
-        if (checkedCells.has(cellKey) || !isInBounds([adjacentRow, adjacentCol], gridSize)) {
-          continue
+        if (
+          checkedCells.has(cellKey) ||
+          !isInBounds([adjacentRow, adjacentCol], gridSize)
+        ) {
+          continue;
         }
+        checkedCells.add(cellKey);
 
-        checkedCells.add(cellKey)
-
-        // Skip if cell is already filled
+        // Skip if already filled
         if (tempGrid[adjacentRow][adjacentCol] !== "") {
-          continue
+          continue;
         }
 
-        // Check if this empty cell has potential for a 4+ letter word
-        if (!hasPotentialForWord(tempGrid, [adjacentRow, adjacentCol], gridSize)) {
-          deadSpaces++
+        // Penalize if this empty cell does not allow room for a 3+ letter word
+        if (
+          !hasPotentialForWord(tempGrid, [adjacentRow, adjacentCol], gridSize)
+        ) {
+          deadSpaces++;
         }
       }
     }
   }
 
-  return deadSpaces
-}
+  return deadSpaces;
+};
 
 // Score a word placement based on various factors
 export const scorePlacement = (
   grid: string[][],
   placement: WordPlacement,
   gridSize: number,
-  isBonus: boolean,
-  bonusWordCells: Set<string>,
+  isBonus: boolean
 ): number => {
-  let score = 0
-  let intersections = 0
-
-  // Check each cell of the placement
+  let score = 0;
+  // Reward intersections and edge placements
   for (let i = 0; i < placement.cells.length; i++) {
-    const [row, col] = placement.cells[i]
-    const letter = placement.word[i]
+    const [row, col] = placement.cells[i];
+    const letter = placement.word[i];
 
-    // Favor intersections with existing words
+    // Favor intersections with matching letters
     if (grid[row][col] === letter && grid[row][col] !== "") {
-      intersections++
-      score += 10
+      score += 10;
     }
 
-    // Favor edge placements to maximize center space
-    const distanceFromEdge = Math.min(row, col, gridSize - 1 - row, gridSize - 1 - col)
-    score += distanceFromEdge === 0 ? 3 : 0
+    // Slight bonus for edge placements to preserve central space
+    const distanceFromEdge = Math.min(
+      row,
+      col,
+      gridSize - 1 - row,
+      gridSize - 1 - col
+    );
+    score += distanceFromEdge === 0 ? 3 : 0;
   }
 
-  // Penalize dead spaces
-  const deadSpaces = countDeadSpaces(grid, placement, gridSize)
-  score -= deadSpaces * 5
+  // Penalize based on created dead spaces
+  const deadSpaces = countDeadSpaces(grid, placement, gridSize);
+  score -= deadSpaces * 5;
 
-  // Favor diagonal placements for the bonus word
+  // For bonus word, strongly favor diagonal placements
   if (isBonus) {
-    const [dRow, dCol] = placement.direction
-    // Check if it's a diagonal direction
+    const [dRow, dCol] = placement.direction;
     if (Math.abs(dRow) === 1 && Math.abs(dCol) === 1) {
-      score += 10000 // Significant bonus for diagonal placement of bonus word
+      score += 10000;
     }
   }
 
-  return score
-}
+  return score;
+};
 
 // Check if a word can be placed at a specific position and direction
 export const canPlaceWord = (
@@ -194,235 +200,241 @@ export const canPlaceWord = (
   direction: Direction,
   gridSize: number,
   isBonus: boolean,
-  bonusWordCells: Set<string>,
+  bonusWordCells: Set<string>
 ): boolean => {
-  const [startRow, startCol] = startCell
-  const [dRow, dCol] = direction
+  const [startRow, startCol] = startCell;
+  const [dRow, dCol] = direction;
 
-  // Check if word would go out of bounds
+  // Ensure the word does not run out of bounds
   if (
     startRow + dRow * (word.length - 1) < 0 ||
     startRow + dRow * (word.length - 1) >= gridSize ||
     startCol + dCol * (word.length - 1) < 0 ||
     startCol + dCol * (word.length - 1) >= gridSize
   ) {
-    return false
+    return false;
   }
 
-  // Check each cell for placement
+  // Check each letter’s cell
   for (let i = 0; i < word.length; i++) {
-    const currentRow = startRow + i * dRow
-    const currentCol = startCol + i * dCol
-    const currentCell = grid[currentRow][currentCol]
-    const cellKey = `${currentRow},${currentCol}`
+    const currentRow = startRow + i * dRow;
+    const currentCol = startCol + i * dCol;
+    const currentCell = grid[currentRow][currentCol];
+    const cellKey = `${currentRow},${currentCol}`;
 
-    // If this is the bonus word, all cells must be empty
+    // Bonus word must be placed on empty cells
     if (isBonus && currentCell !== "") {
-      return false
+      return false;
     }
 
-    // If this is not the bonus word, it cannot overlap with bonus word cells
+    // Other words cannot use cells occupied by the bonus word
     if (!isBonus && bonusWordCells.has(cellKey)) {
-      return false
+      return false;
     }
 
-    // First and last letters must be placed in empty cells
+    // Enforce that the first and last letters are in empty cells
     if ((i === 0 || i === word.length - 1) && currentCell !== "") {
-      return false
+      return false;
     }
 
-    // Middle letters can intersect if they match
+    // Allow intersections in the middle only if the letters match
     if (currentCell !== "" && currentCell !== word[i]) {
-      return false
+      return false;
     }
   }
 
-  return true
-}
+  return true;
+};
 
 // Place a word in the grid and return the cells it occupies
 export const placeWord = (
   grid: string[][],
   word: string,
   startCell: Cell,
-  direction: Direction,
+  direction: Direction
 ): Cell[] => {
-  const [startRow, startCol] = startCell
-  const [dRow, dCol] = direction
-  const cells: Cell[] = []
+  const [startRow, startCol] = startCell;
+  const [dRow, dCol] = direction;
+  const cells: Cell[] = [];
 
   for (let i = 0; i < word.length; i++) {
-    const currentRow = startRow + i * dRow
-    const currentCol = startCol + i * dCol
-    grid[currentRow][currentCol] = word[i]
-    cells.push([currentRow, currentCol])
+    const currentRow = startRow + i * dRow;
+    const currentCol = startCol + i * dCol;
+    grid[currentRow][currentCol] = word[i];
+    cells.push([currentRow, currentCol]);
   }
 
-  return cells
-}
+  return cells;
+};
 
-// Find the best placement for a word
+// Find the best placement for a word by iterating over all grid cells and directions
 export const findBestPlacement = (
   grid: string[][],
   word: string,
   gridSize: number,
   isBonus: boolean,
   bonusWordCells: Set<string>,
-  usedDirections: Set<number>,
+  usedDirections: Set<number>
 ): WordPlacement | null => {
-  let bestScore = Number.NEGATIVE_INFINITY
-  let bestPlacement: WordPlacement | null = null
+  let bestScore = Number.NEGATIVE_INFINITY;
+  let bestPlacement: WordPlacement | null = null;
 
-  // Adaptive attempts based on word length
-  const maxAttempts = 300 + word.length * 30
+  // Build an array of direction indices.
+  let directionsToTry = [...DIRECTIONS.keys()];
 
-  // Try each direction, prioritizing unused ones
-  const directionIndices = [...Array(DIRECTIONS.length).keys()]
-
-  // Sort directions: for bonus word, prioritize diagonals
   if (isBonus) {
-    // Prioritize diagonal directions (indices 0 and 1 in our DIRECTIONS array)
-    directionIndices.sort((a, b) => {
-      // Diagonal directions are indices 0 and 1
-      const aIsDiagonal = a === 0 || a === 1
-      const bIsDiagonal = b === 0 || b === 1
-
-      if (aIsDiagonal && !bIsDiagonal) return -1
-      if (!aIsDiagonal && bIsDiagonal) return 1
-      return 0
-    })
+    // For the bonus word, prioritize diagonal directions (indices 0 and 1)
+    directionsToTry.sort((a, b) => {
+      const aIsDiag = a === 0 || a === 1 ? 1 : 0;
+      const bIsDiag = b === 0 || b === 1 ? 1 : 0;
+      return bIsDiag - aIsDiag;
+    });
   } else {
-    // For non-bonus words, prioritize unused directions
-    directionIndices.sort((a, b) => {
-      if (usedDirections.has(a) && !usedDirections.has(b)) return 1
-      if (!usedDirections.has(a) && usedDirections.has(b)) return -1
-      return 0
-    })
+    // For non-bonus words, favor non-diagonals (horizontal/vertical) first,
+    // then consider whether the direction has been used.
+    directionsToTry.sort((a, b) => {
+      const aIsDiag = DIRECTIONS[a][0] !== 0 && DIRECTIONS[a][1] !== 0 ? 1 : 0;
+      const bIsDiag = DIRECTIONS[b][0] !== 0 && DIRECTIONS[b][1] !== 0 ? 1 : 0;
+      if (aIsDiag !== bIsDiag) {
+        return aIsDiag - bIsDiag; // non-diagonals (0) come first
+      }
+      const aUsed = usedDirections.has(a) ? 1 : 0;
+      const bUsed = usedDirections.has(b) ? 1 : 0;
+      return aUsed - bUsed;
+    });
   }
 
-  // Try to find the best position
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    // Choose a direction, prioritizing based on the sorted indices
-    const dirIndex = directionIndices[attempt % directionIndices.length]
-    const direction = DIRECTIONS[dirIndex]
-
-    // Choose starting position - try edge positions more often for longer words
-    let startRow, startCol
-    if (Math.random() < 0.6 && word.length > 3) {
-      // Try edge positions
-      const edge = Math.floor(Math.random() * 4)
-      if (edge === 0) {
-        startRow = 0
-        startCol = Math.floor(Math.random() * gridSize)
-      } else if (edge === 1) {
-        startRow = gridSize - 1
-        startCol = Math.floor(Math.random() * gridSize)
-      } else if (edge === 2) {
-        startRow = Math.floor(Math.random() * gridSize)
-        startCol = 0
-      } else {
-        startRow = Math.floor(Math.random() * gridSize)
-        startCol = gridSize - 1
-      }
-    } else {
-      // Random position
-      startRow = Math.floor(Math.random() * gridSize)
-      startCol = Math.floor(Math.random() * gridSize)
+  // Build a list of all grid cells.
+  let cells: Cell[] = [];
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      cells.push([row, col]);
     }
-
-    const startCell: Cell = [startRow, startCol]
-
-    // Check if word fits
-    if (canPlaceWord(grid, word, startCell, direction, gridSize, isBonus, bonusWordCells)) {
-      // Create a potential placement
-      const cells = getCellsInDirection(startCell, direction, word.length, gridSize)
-      const placement: WordPlacement = {
-        word,
-        startCell,
-        direction,
-        cells,
-      }
-
-      // Score this placement
-      const score = scorePlacement(grid, placement, gridSize, isBonus, bonusWordCells)
-
-      // Update best position if this is better
-      if (score > bestScore) {
-        bestScore = score
-        bestPlacement = placement
-      }
-
-      // For bonus word, if we found a good diagonal placement, use it immediately
-      if (isBonus && score > 20 && Math.abs(direction[0]) === 1 && Math.abs(direction[1]) === 1) {
-        break
-      }
-
-      // If this is a good enough score or we're running out of attempts, use it
-      if (score > 15 || attempt > maxAttempts * 0.8) {
-        break
-      }
+  }
+  // For the bonus word, shuffle the cells to avoid always starting at [0,0]
+  if (isBonus) {
+    for (let i = cells.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cells[i], cells[j]] = [cells[j], cells[i]];
     }
   }
 
-  return bestPlacement
-}
+  // Iterate over the list of cells (shuffled for bonus word)
+  for (const startCell of cells) {
+    for (const dirIndex of directionsToTry) {
+      const direction = DIRECTIONS[dirIndex];
+      const endRow = startCell[0] + direction[0] * (word.length - 1);
+      const endCol = startCell[1] + direction[1] * (word.length - 1);
+      if (
+        endRow < 0 ||
+        endRow >= gridSize ||
+        endCol < 0 ||
+        endCol >= gridSize
+      ) {
+        continue;
+      }
 
-// Place words in the grid
+      if (
+        canPlaceWord(
+          grid,
+          word,
+          startCell,
+          direction,
+          gridSize,
+          isBonus,
+          bonusWordCells
+        )
+      ) {
+        const cellsInWord = getCellsInDirection(
+          startCell,
+          direction,
+          word.length,
+          gridSize
+        );
+        const placement: WordPlacement = {
+          word,
+          startCell,
+          direction,
+          cells: cellsInWord,
+        };
+        const score = scorePlacement(grid, placement, gridSize, isBonus);
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestPlacement = placement;
+          // For bonus words, we continue checking all shuffled cells to avoid always defaulting to [0,0]
+        }
+      }
+    }
+  }
+
+  return bestPlacement;
+};
+
+// Place words in the grid; bonus word is placed first (diagonally if possible)
+// and subsequent words avoid bonus word cells and aim for efficient packing.
 export const placeWordsInGrid = (
   grid: string[][],
   words: string[],
-  gridSize: number,
-): { bonusWordCells: Cell[]; bonusWordDirection: Direction; unplacedWords: string[] } => {
-  const unplacedWords: string[] = []
-  let bonusWordCells: Cell[] = []
-  let bonusWordDirection: Direction = [0, 0]
+  gridSize: number
+): {
+  bonusWordCells: Cell[];
+  bonusWordDirection: Direction;
+  placedWords: string[];
+} => {
+  const placedWords: string[] = [];
+  let bonusWordCells: Cell[] = [];
+  let bonusWordDirection: Direction = [0, 0];
 
   // Track which directions have been used
-  const usedDirections = new Set<number>()
+  const usedDirections = new Set<number>();
+  // Track cells occupied by the bonus word so no other word overlaps them
+  const bonusWordOccupiedCells = new Set<string>();
 
-  // Track cells used by the bonus word
-  const bonusWordOccupiedCells = new Set<string>()
-
-  // Process words in order (bonus word first, then by length)
+  // Process words in order: bonus word first, then the others
   for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
-    const word = words[wordIndex]
-    const isBonus = wordIndex === 0 // First word is the bonus word
+    const word = words[wordIndex];
+    const isBonus = wordIndex === 0;
 
-    // Find the best placement for this word
-    const bestPlacement = findBestPlacement(grid, word, gridSize, isBonus, bonusWordOccupiedCells, usedDirections)
+    const bestPlacement = findBestPlacement(
+      grid,
+      word,
+      gridSize,
+      isBonus,
+      bonusWordOccupiedCells,
+      usedDirections
+    );
 
-    // Place the word if a valid placement was found
     if (bestPlacement) {
       const dirIndex = DIRECTIONS.findIndex(
-        (dir) => dir[0] === bestPlacement.direction[0] && dir[1] === bestPlacement.direction[1],
-      )
+        (dir) =>
+          dir[0] === bestPlacement.direction[0] &&
+          dir[1] === bestPlacement.direction[1]
+      );
 
-      // Place the word in the grid
-      const wordCells = placeWord(grid, word, bestPlacement.startCell, bestPlacement.direction)
+      const wordCells = placeWord(
+        grid,
+        word,
+        bestPlacement.startCell,
+        bestPlacement.direction
+      );
 
-      // If this is the bonus word, track its cells
       if (isBonus) {
-        bonusWordCells = wordCells
-        bonusWordDirection = bestPlacement.direction
-
-        // Mark bonus word cells
+        bonusWordCells = wordCells;
+        bonusWordDirection = bestPlacement.direction;
         for (const [row, col] of wordCells) {
-          bonusWordOccupiedCells.add(`${row},${col}`)
+          bonusWordOccupiedCells.add(`${row},${col}`);
         }
       }
 
-      // Mark direction as used
-      usedDirections.add(dirIndex)
-    } else {
-      // Couldn't place the word
-      unplacedWords.push(word)
-    }
+      usedDirections.add(dirIndex);
+      placedWords.push(word);
+    } 
   }
 
   return {
     bonusWordCells,
     bonusWordDirection,
-    unplacedWords,
-  }
-}
-
+    placedWords,
+  };
+};

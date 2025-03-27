@@ -142,7 +142,7 @@ const WORD_LIST = sortBy([
   "JEAN",
   "ANTONIN",
   "TITOUAN"
-], s => -(s.length + 10 * Math.random())) // bias towards longer words first with some randomness
+], s => -(s.length + 20 * Math.random())) // bias towards longer words first with some randomness
 
 const GRID_SIZE = 10
 
@@ -197,7 +197,7 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
     // Place words in the grid
     const allWords = [bonusWord, ...WORD_LIST]
     try {
-      const { unplacedWords } = placeWordsInGrid(newGrid, allWords, GRID_SIZE)
+      const { placedWords } = placeWordsInGrid(newGrid, allWords, GRID_SIZE)
 
       // Fill remaining cells with random letters
       for (let row = 0; row < GRID_SIZE; row++) {
@@ -211,9 +211,9 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
       setGrid(newGrid)
 
       // Log how many words were placed successfully
-      console.log(`Placed ${allWords.length - unplacedWords.length} out of ${allWords.length} words`)
-      if (unplacedWords.length > 0) {
-        console.log(`Unplaced words: ${unplacedWords.join(", ")}`)
+      console.log(`${placedWords.length} out of ${allWords.length} words were placed`)
+      if (placedWords.length > 0) {
+        console.log(`Placed words: ${placedWords.join(", ")}`)
       }
     } catch (error) {
       console.error("Error placing words:", error)
@@ -563,8 +563,6 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!gridRef.current || !isDragging) return
 
-    // Prevent scrolling while dragging
-    e.preventDefault()
 
     // Get touch position relative to grid
     const touch = e.touches[0]
@@ -613,7 +611,6 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
                   onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
                   onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
                   onTouchStart={(e) => {
-                    e.preventDefault() // Prevent double-tap zoom
                     handleCellMouseDown(rowIndex, colIndex)
                   }}
                   onTouchMove={handleTouchMove}
