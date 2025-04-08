@@ -667,4 +667,3 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
     </div>
   )
 }
-

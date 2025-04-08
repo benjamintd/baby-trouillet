@@ -2,7 +2,6 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
 import { hotjar } from "react-hotjar";
-import useSWR from "swr";
 import {
   currentTypedAtom,
   currentWordAtom,
