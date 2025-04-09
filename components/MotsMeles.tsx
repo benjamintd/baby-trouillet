@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
-import {  sortBy } from "lodash"
+import {  sortBy, uniq } from "lodash"
 import { placeWordsInGrid, type Cell, type Direction } from "../lib/placeWordsInGrid"
 import fr from "../lib/dictionnaries/fr"
 import { useAtom } from "jotai"
@@ -19,7 +19,7 @@ const DIRECTIONS: Direction[] = [
 ]
 
 // Sample word list - can be customized
-const WORD_LIST = sortBy([
+const WORD_LIST = uniq(sortBy([
   "EMMA",
   "LOUISE",
   "JADE",
@@ -142,10 +142,35 @@ const WORD_LIST = sortBy([
   "BASILE",
   "JEAN",
   "ANTONIN",
-  "TITOUAN"
-], s => -(s.length + 30 * rng())) // bias towards longer words first with some randomness
+  "TITOUAN",
+  "ADRIEN",
+  "ANAIS",
+  "AURELIE",
+  "BENOIT",
+  "CAMILLE",
+  "CELIA",
+  "DAMIEN",
+  "EMILIE",
+  "FLAVIEN",
+  "GAELLE",
+  "HUGO",
+  "INES",
+  "JULIEN",
+  "LEA",
+  "MATHIAS",
+  "NAEL",
+  "PAULINE",
+  "ROMANE",
+  "SACHA",
+  "TIMOTHE",
+  "VALERIE",
+  "VICTOR",
+  "WILLIAM",
+  "YANN",
+  "ZOE"
+], s => -(s.length + 30 * rng()))) // bias towards longer words first with some randomness
 
-const GRID_SIZE: [number, number] = [14, 9]
+const GRID_SIZE: [number, number] = [12, 9]
 const [gridRows, gridCols] = GRID_SIZE
 
 export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
