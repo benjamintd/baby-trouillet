@@ -145,7 +145,8 @@ const WORD_LIST = sortBy([
   "TITOUAN"
 ], s => -(s.length + 30 * rng())) // bias towards longer words first with some randomness
 
-const GRID_SIZE = 10
+const GRID_SIZE: [number, number] = [14, 9]
+const [gridRows, gridCols] = GRID_SIZE
 
 export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
   const ALL_VALID_WORDS = [...fr.split("\n").map((s) => s.toUpperCase()), ...WORD_LIST, bonusWord]
@@ -172,9 +173,9 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
   // Initialize the game
   useEffect(() => {
     setGrid(
-      Array(GRID_SIZE)
+      Array(gridRows)
         .fill(null)
-        .map(() => Array(GRID_SIZE).fill("")),
+        .map(() => Array(gridCols).fill("")),
     )
     generateNewGame()
   }, [])
@@ -190,10 +191,10 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
   const generateNewGame = () => {
     setFoundWords([])
 
-    // Create empty GRID_SIZE grid
-    const newGrid = Array(GRID_SIZE)
+    // Create empty grid with gridRows and gridCols
+    const newGrid = Array(gridRows)
       .fill(null)
-      .map(() => Array(GRID_SIZE).fill(""))
+      .map(() => Array(gridCols).fill(""))
 
     // Place words in the grid
     const allWords = [bonusWord, ...WORD_LIST]
@@ -201,8 +202,8 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
       const { placedWords } = placeWordsInGrid(newGrid, allWords, GRID_SIZE)
 
       // Fill remaining cells with random letters
-      for (let row = 0; row < GRID_SIZE; row++) {
-        for (let col = 0; col < GRID_SIZE; col++) {
+      for (let row = 0; row < gridRows; row++) {
+        for (let col = 0; col < gridCols; col++) {
           if (newGrid[row][col] === "") {
             newGrid[row][col] = String.fromCharCode(65 + Math.floor(rng() * 26))
           }
@@ -219,10 +220,10 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
     } catch (error) {
       console.error("Error placing words:", error)
       // Create a fallback grid with random letters if placement fails
-      const fallbackGrid = Array(GRID_SIZE)
+      const fallbackGrid = Array(gridRows)
         .fill(null)
         .map(() =>
-          Array(GRID_SIZE)
+          Array(gridCols)
             .fill("")
             .map(() => String.fromCharCode(65 + Math.floor(rng() * 26))),
         )
@@ -300,7 +301,7 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
       const nextCol = startCol + i * dCol
 
       // Stop if we go out of bounds
-      if (nextRow < 0 || nextRow >= GRID_SIZE || nextCol < 0 || nextCol >= GRID_SIZE) {
+      if (nextRow < 0 || nextRow >= gridRows || nextCol < 0 || nextCol >= gridCols) {
         break
       }
 
@@ -326,8 +327,8 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
     let currentRow = startRow
     let currentCol = startCol
 
-    // Calculate how far we should go in this direction
-    const maxSteps = GRID_SIZE // Maximum grid size
+    // Update: use maximum of gridRows and gridCols
+    const maxSteps = Math.max(gridRows, gridCols)
 
     for (let i = 0; i <= maxSteps; i++) {
       // Add current cell
@@ -344,7 +345,7 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
       currentCol += dCol
 
       // Stop if we go out of bounds
-      if (currentRow < 0 || currentRow >= GRID_SIZE || currentCol < 0 || currentCol >= GRID_SIZE) {
+      if (currentRow < 0 || currentRow >= gridRows || currentCol < 0 || currentCol >= gridCols) {
         break
       }
     }
@@ -572,14 +573,14 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
     const y = touch.clientY - gridRect.top
 
     // Calculate which cell the touch is over
-    const cellWidth = gridRect.width / GRID_SIZE
-    const cellHeight = gridRect.height / GRID_SIZE
+    const cellWidth = gridRect.width / gridCols
+    const cellHeight = gridRect.height / gridRows
 
     const col = Math.floor(x / cellWidth)
     const row = Math.floor(y / cellHeight)
 
     // Only process valid cells
-    if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE) {
+    if (row >= 0 && row < gridRows && col >= 0 && col < gridCols) {
       handleCellMouseEnter(row, col)
     }
   }
@@ -591,7 +592,7 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
         <div className="relative">
           <div
             ref={gridRef}
-            className="grid grid-cols-10 touch-none border border-slate-600 rounded-md p-2 bg-muted/20"
+            className="grid grid-cols-9 touch-none border border-slate-600 rounded-md p-2 bg-muted/20"
             onMouseUp={handleSelectionEnd}
             onMouseLeave={handleSelectionEnd}
             onTouchEnd={handleSelectionEnd}

@@ -19,9 +19,9 @@ export const DIRECTIONS: Direction[] = [
 ];
 
 // Check if a cell is within grid bounds
-export const isInBounds = (cell: Cell, gridSize: number): boolean => {
+export const isInBounds = (cell: Cell, [gridRows, gridCols]: [number, number]): boolean => {
   const [row, col] = cell;
-  return row >= 0 && row < gridSize && col >= 0 && col < gridSize;
+  return row >= 0 && row < gridRows && col >= 0 && col < gridCols;
 };
 
 
@@ -39,7 +39,7 @@ export const getCellsInDirection = (
   startCell: Cell,
   direction: Direction,
   length: number,
-  gridSize: number
+  gridSize: [number, number]
 ): Cell[] => {
   const cells: Cell[] = [];
   const [startRow, startCol] = startCell;
@@ -63,7 +63,7 @@ export const getCellsInDirection = (
 export const hasPotentialForWord = (
   grid: string[][],
   cell: Cell,
-  gridSize: number
+  gridSize: [number, number]
 ): boolean => {
   const [row, col] = cell;
 
@@ -109,7 +109,7 @@ export const hasPotentialForWord = (
 export const countDeadSpaces = (
   grid: string[][],
   placement: WordPlacement,
-  gridSize: number
+  gridSize: [number, number]
 ): number => {
   // Create a temporary copy of the grid
   const tempGrid = grid.map((row) => [...row]);
@@ -165,7 +165,7 @@ export const countDeadSpaces = (
 export const scorePlacement = (
   grid: string[][],
   placement: WordPlacement,
-  gridSize: number,
+  gridSize: [number, number],
   isBonus: boolean
 ): number => {
   let score = 0;
@@ -179,12 +179,14 @@ export const scorePlacement = (
       score += 10;
     }
 
+    const [gridRows, gridCols] = gridSize;
+
     // Slight bonus for edge placements to preserve central space
     const distanceFromEdge = Math.min(
       row,
       col,
-      gridSize - 1 - row,
-      gridSize - 1 - col
+      gridRows - 1 - row,
+      gridCols - 1 - col
     );
     score += distanceFromEdge === 0 ? 3 : 0;
   }
@@ -210,7 +212,7 @@ export const canPlaceWord = (
   word: string,
   startCell: Cell,
   direction: Direction,
-  gridSize: number,
+  [gridRows, gridCols]: [number, number],
   isBonus: boolean,
   bonusWordCells: Set<string>
 ): boolean => {
@@ -220,9 +222,9 @@ export const canPlaceWord = (
   // Ensure the word does not run out of bounds
   if (
     startRow + dRow * (word.length - 1) < 0 ||
-    startRow + dRow * (word.length - 1) >= gridSize ||
+    startRow + dRow * (word.length - 1) >= gridRows ||
     startCol + dCol * (word.length - 1) < 0 ||
-    startCol + dCol * (word.length - 1) >= gridSize
+    startCol + dCol * (word.length - 1) >= gridCols
   ) {
     return false;
   }
@@ -283,7 +285,7 @@ export const placeWord = (
 export const findBestPlacement = (
   grid: string[][],
   word: string,
-  gridSize: number,
+  gridSize: [number, number],
   isBonus: boolean,
   bonusWordCells: Set<string>,
   usedDirections: Set<number>
@@ -316,10 +318,11 @@ export const findBestPlacement = (
     });
   }
 
+  const [gridRows, gridCols] = gridSize;
   // Build a list of all grid cells.
   let cells: Cell[] = [];
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
+  for (let row = 0; row < gridRows; row++) {
+    for (let col = 0; col < gridCols; col++) {
       cells.push([row, col]);
     }
   }
@@ -336,9 +339,9 @@ export const findBestPlacement = (
       const endCol = startCell[1] + direction[1] * (word.length - 1);
       if (
         endRow < 0 ||
-        endRow >= gridSize ||
+        endRow >= gridRows ||
         endCol < 0 ||
-        endCol >= gridSize
+        endCol >= gridCols
       ) {
         continue;
       }
@@ -385,7 +388,7 @@ export const findBestPlacement = (
 export const placeWordsInGrid = (
   grid: string[][],
   words: string[],
-  gridSize: number
+  gridSize: [number, number]
 ): {
   bonusWordCells: Cell[];
   bonusWordDirection: Direction;

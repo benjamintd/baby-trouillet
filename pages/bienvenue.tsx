@@ -1,16 +1,17 @@
+import ReactConfetti from "react-canvas-confetti";
 import { useAtom } from "jotai";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import ClientOnly from "../components/ClientOnly";
-import Confetti from "../components/Confetti";
 import { gameAtom, hasWonMotMeleAtom, validWordsAtom } from "../core/atoms";
 import { Submission } from "../models/Submission";
 import photo from "../public/photobb2.png";
 import { hotjar } from "react-hotjar";
 import MotsMeles from "../components/MotsMeles";
 import { AnimatePresence, motion } from "motion/react";
+import colors from "tailwindcss/colors";
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const reveal: Submission = {
@@ -32,7 +33,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
     },
   };
 };
-
 
 const Page = ({
   record,
@@ -90,7 +90,7 @@ const Page = ({
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-3xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
+        <h1 className="mb-4 text-4xl xl:text-5xl text-sky-900 font-intro-bold">
           👋 La famille s'agrandit&nbsp;!
         </h1>
         <ClientOnly>
@@ -116,30 +116,35 @@ const Page = ({
 
           <AnimatePresence mode="wait">
             {!delayedHasWon ? (
-                <motion.div
+              <motion.div
                 key="game"
                 initial={{ opacity: 1 }}
                 exit={{
                   opacity: 0,
                   scale: 0.8,
                   transition: {
-                  duration: 0.5,
+                    duration: 0.5,
                   },
                 }}
                 className="flex-col items-center justify-center w-full h-full"
-                >
-                <p className="mb-2 text-lg text-sky-900">
+              >
+                <p className="mb-2 text-2xl text-sky-900">
                   Pour trouver{" "}
                   <strong className="font-intro-bold">son prénom</strong>, il
-                  faudra chercher dans cette grille ! 🧩
+                  faudra chercher dans cette grille 🧩
                 </p>
                 <p className="mb-4 text-sky-900">
-                  Rayez les prénoms dans la grille (dans toutes les directions).
-                  Vous saurez quand vous aurez trouvé le bon 😉.
+                  Rayez les prénoms dans la grille (dans toutes les directions,
+                  diagonales également !). Vous saurez quand vous aurez trouvé
+                  le bon 😉.
                 </p>
 
-                <MotsMeles bonusWord={reveal.Prénom.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")} />
-                </motion.div>
+                <MotsMeles
+                  bonusWord={reveal.Prénom.toUpperCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")}
+                />
+              </motion.div>
             ) : (
               <motion.div
                 key="reveal"
@@ -175,13 +180,28 @@ const Page = ({
               </motion.div>
             )}
           </AnimatePresence>
-        </ClientOnly>
 
-        <Confetti />
+          <div className="fixed top-0 left-0 right-0 w-screen h-screen pointer-events-none">
+            <ReactConfetti
+              className="w-full h-full"
+              fire={hasWon}
+              colors={[
+                colors.rose[300],
+                colors.pink[200],
+                colors.sky[700],
+                colors.orange[500],
+              ]}
+              disableForReducedMotion={true}
+              resize={true}
+              useWorker={true}
+              scalar={1}
+              ticks={300}
+            />
+          </div>
+        </ClientOnly>
       </main>
     </div>
   );
 };
 
 export default Page;
-
