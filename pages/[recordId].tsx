@@ -25,14 +25,14 @@ const Page = ({ record }: { record: Submission }) => {
 
   if (!record) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100" />
+      <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-nunito from-slate-50 bg-gradient-to-br to-amber-50" />
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100">
+    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-nunito from-slate-50 bg-gradient-to-br to-amber-50">
       <Head>
-        <title>Baby Bensarah</title>
+        <title>Baby #2</title>
         <link rel="icon" href="/favicon.png" />
         <meta name="robots" content="noindex" />
         {/* description and open graph */}
@@ -40,7 +40,7 @@ const Page = ({ record }: { record: Submission }) => {
           name="description"
           content="Pronostics pour le bébé Tran Mamy 🐣"
         />
-        <meta property="og:title" content="Baby Bensarah" />
+        <meta property="og:title" content="Baby #2" />
         <meta
           property="og:image"
           content="https://baby.bensarah.fr/og-image.png"
@@ -48,15 +48,15 @@ const Page = ({ record }: { record: Submission }) => {
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
-          Baby Bensarah
+        <h1 className="mb-4 text-6xl text-slate-900 font-nunito">
+          Baby #2
         </h1>
 
-        <p className="mb-8 text-lg text-sky-900">{`Merci ${record.Nom} d'avoir joué avec nous ! ❤️`}</p>
+        <p className="mb-8 text-lg text-slate-900">{`Merci ${record.Nom} d'avoir joué avec nous ! ❤️`}</p>
 
         <ResponseCard record={record} />
 
-        <p className="mt-2 text-gray-800 justify-self-end">
+        <p className="mt-8 text-gray-800 justify-self-end">
           Vous voulez changer votre pari ?{" "}
           <button onClick={replay} className="border-b border-gray-800">
             Rejouer

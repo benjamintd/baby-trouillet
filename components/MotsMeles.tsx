@@ -159,7 +159,6 @@ const WORD_LIST = uniq(sortBy([
   "MATHIAS",
   "NAEL",
   "PAULINE",
-  "ROMANE",
   "SACHA",
   "TIMOTHE",
   "VALERIE",
@@ -169,7 +168,7 @@ const WORD_LIST = uniq(sortBy([
   "ZOE"
 ], s => -(s.length + 30 * rng()))) // bias towards longer words first with some randomness
 
-const GRID_SIZE: [number, number] = [10, 9]
+const GRID_SIZE: [number, number] = [9, 9]
 const [gridRows, gridCols] = GRID_SIZE
 
 export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
@@ -681,8 +680,8 @@ export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
                 y1={line.y1}
                 x2={line.x2}
                 y2={line.y2}
-                stroke="rgba(220, 38, 38, 0.4)" // More transparent red
-                strokeWidth="2" // Thinner line
+                stroke="rgba(161, 97, 7, 0.5)"
+                strokeWidth="2"
                 strokeLinecap="round"
               />
             ))}

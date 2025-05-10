@@ -12,7 +12,7 @@ const Home: NextPage = () => {
     "idle" | "submitting" | "error" | "success"
   >("idle");
   const [formState, setFormState] = useState<Partial<Submission>>({
-    DateDeNaissance: "2022-12-15",
+    DateDeNaissance: "2025-06-02",
   });
   const [recordId, setRecordId] = useCookie("recordId");
 
@@ -57,9 +57,9 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100">
+    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-nunito from-slate-50 bg-gradient-to-br to-amber-50">
       <Head>
-        <title>Baby Bensarah</title>
+        <title>Baby #2</title>
         <link rel="icon" href="/favicon.png" />
         <meta name="robots" content="noindex" />
         {/* description and open graph */}
@@ -67,7 +67,7 @@ const Home: NextPage = () => {
           name="description"
           content="Pronostics pour le bébé Tran Mamy 🐣"
         />
-        <meta property="og:title" content="Baby Bensarah" />
+        <meta property="og:title" content="Baby #2" />
         <meta
           property="og:image"
           content="https://baby.bensarah.fr/og-image.png"
@@ -75,14 +75,13 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
-          Baby Bensarah
+        <h1 className="mb-4 text-6xl text-slate-900 font-nunito font-bold">
+          Baby #2
         </h1>
 
-        <p className="mb-8 text-lg text-sky-900">
-          Nous attendons avec impatience la naissance de notre bébé. Pour
-          l'occasion, nous avons décidé de faire un petit jeu&nbsp;!
-          <br />À la clé, une bouteille de champagne 🍾 et une rencontre
+        <p className="mb-8 text-lg text-slate-900 text-balance">
+          Nous attendons avec impatience la naissance de notre bébé. Vous l'attendiez, voilà un petit formulaire de pronostics&nbsp;!
+          <br />À la clé, une bouteille de champagne et une rencontre
           exclusive avec l'enfant 🤗.
         </p>
 
@@ -144,23 +143,6 @@ const Home: NextPage = () => {
               centimètres.
             </p>
             <p className="mb-4">
-              {formState.Sexe === "F" ? "Elle" : "Il"} aura une tête{" "}
-              <select
-                onChange={handleInputChange}
-                className="input"
-                name="Cheveux"
-                id="Cheveux"
-              >
-                <option value="" disabled selected>
-                  choisir...
-                </option>
-                <option value="Aucun">chauve</option>
-                <option value="Duvet">duveteuse</option>
-                <option value="Cheveux">chevelue</option>
-              </select>
-              .
-            </p>
-            <p className="mb-4">
               {formState.Sexe === "F" ? "Elle" : "Il"} naîtra le
               <span className="text-left">
                 <input
@@ -169,9 +151,9 @@ const Home: NextPage = () => {
                   required
                   onChange={handleInputChange}
                   name="DateDeNaissance"
-                  defaultValue="2022-12-15"
-                  min="2022-11-01"
-                  max="2022-12-31"
+                  defaultValue="2025-06-02"
+                  min="2025-05-10"
+                  max="2025-06-10"
                 />{" "}
                 à{" "}
                 <input
@@ -188,10 +170,9 @@ const Home: NextPage = () => {
               </span>
             </p>
           </div>
-          <div className="mb-12">
-            <div className="grid grid-cols-2 gap-6">
-              <div className="flex flex-col items-start mt-6">
-                <label htmlFor="Nom">Votre nom</label>
+          <div className="mb-12 flex flex-col   items-center w-full">
+              <div className="flex flex-col items-center mt-6 w-[300px]">
+                <label htmlFor="Nom" className='mb-2'>Votre nom</label>
                 <input
                   id="Nom"
                   className="w-full secondary-input"
@@ -202,33 +183,7 @@ const Home: NextPage = () => {
                   onChange={handleInputChange}
                   required
                 />
-              </div>
-              <div className="flex flex-col items-start mt-6">
-                <label htmlFor="Nom">Votre email</label>
-                <input
-                  className="w-full secondary-input"
-                  type="email"
-                  autoComplete="email"
-                  name="Email"
-                  placeholder="Email"
-                  required
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
 
-            <div className="flex flex-col items-start mt-6">
-              <label htmlFor="Nom">
-                Votre adresse (pour les faire-parts !)
-              </label>
-              <textarea
-                className="w-full secondary-input"
-                placeholder="1 rue de la Paix, 75001 Paris"
-                name="Adresse"
-                autoComplete="street-address"
-                required
-                onChange={handleInputChange}
-              />
             </div>
           </div>
 
@@ -256,14 +211,15 @@ const Home: NextPage = () => {
   );
 };
 
-// redirect to /bienvenue on load
-export const getServerSideProps: GetServerSideProps = async () => {
+/* redirect to /bienvenue on load
+// export const getServerSideProps: // GetServerSideProps = async () => {
   return {
     redirect: {
       destination: "/bienvenue",
       permanent: true,
     },
   };
-};
+}; 
+*/
 
 export default Home;

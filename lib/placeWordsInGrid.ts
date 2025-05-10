@@ -13,7 +13,6 @@ export type WordPlacement = {
 // Constants
 export const DIRECTIONS: Direction[] = [
   [1, 1], // diagonal down-right
-  [-1, 1], // diagonal up-right
   [0, 1], // right (non-diagonal)
   [1, 0], // down (non-diagonal)
 ];

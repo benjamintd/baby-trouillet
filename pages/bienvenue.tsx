@@ -18,8 +18,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Dorian",
-    Sexe: "M",
+    Prénom: "Secret",
+    Sexe: "F",
     Poids: 3.21,
     Taille: 51,
     Cheveux: "Duvet",
@@ -75,14 +75,14 @@ const Page = ({
   }, [record]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-slate-50 bg-gradient-to-br to-amber-50">
+    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-nunito from-slate-50 bg-gradient-to-br to-amber-50">
       <Head>
-        <title>Baby Bensarah</title>
+        <title>Baby #2</title>
         <link rel="icon" href="/favicon.png" />
         <meta name="robots" content="noindex" />
         {/* description and open graph */}
-        <meta name="description" content="La famille s'agrandit ! 🐣" />
-        <meta property="og:title" content="Baby Bensarah" />
+        <meta name="description" content="Une bonne nouvelle 🐣" />
+        <meta property="og:title" content="Baby #2" />
         <meta
           property="og:image"
           content="https://baby.bensarah.fr/og-image.png"
@@ -90,25 +90,25 @@ const Page = ({
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-3xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-4xl xl:text-5xl text-slate-900 font-intro-bold">
+        <h1 className="mb-4 text-4xl xl:text-5xl text-slate-900 font-nunito font-bold">
           👋 La famille s'agrandit&nbsp;!
         </h1>
         <ClientOnly>
-          <p className="py-8 text-2xl text-slate-900">
-            Nous avons accueilli un nouveau membre dans la famille ! C'est un
-            beau bébé qui pèse
-            <strong className="font-intro-bold">{` ${reveal.Poids} kg`}</strong>{" "}
+          <p className="py-8 text-2xl text-slate-900 text-balance">
+            Nous avons accueilli un nouveau membre dans la famille&nbsp;! C'est un
+            bébé qui pèse
+            <strong className="font-nunito font-bold">{` ${reveal.Poids} kg`}</strong>{" "}
             et mesure
-            <strong className="font-intro-bold">{` ${reveal.Taille} cm`}</strong>
+            <strong className="font-nunito font-bold">{` ${reveal.Taille} cm`}</strong>
             , et qui a vu le jour le{" "}
-            <strong className="font-intro-bold">
+            <strong className="font-nunito font-bold">
               {new Date(reveal.DateDeNaissance).toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "long",
               })}
             </strong>{" "}
             à{" "}
-            <strong className="font-intro-bold">
+            <strong className="font-nunito">
               {reveal.HeureDeNaissance}
             </strong>
             .
@@ -128,12 +128,12 @@ const Page = ({
                 }}
                 className="flex-col items-center justify-center w-full h-full"
               >
-                <p className="mb-2 text-2xl text-slate-900">
+                <p className="mb-4 text-2xl text-slate-900 text-balance">
                   Pour trouver{" "}
-                  <strong className="font-intro-bold">son prénom</strong>, il
-                  faudra chercher dans cette grille 🧩
+                  <strong className="font-nunito font-bold">son prénom</strong>, il
+                  faudra chercher dans cette grille.
                 </p>
-                <p className="mb-4 text-slate-900">
+                <p className="mb-4 text-slate-900 text-balance">
                   Rayez les prénoms dans la grille (dans toutes les directions,
                   diagonales également !). Vous saurez quand vous aurez trouvé
                   le bon 😉.
@@ -157,7 +157,7 @@ const Page = ({
               >
                 <p className="pb-8 text-2xl text-slate-900">
                   {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
-                  <strong className="font-intro-bold">{reveal.Prénom}</strong>{" "}
+                  <strong className="font-nunito font-bold">{reveal.Prénom}</strong>{" "}
                   ❤️ et nous sommes comblés de bonheur !
                 </p>
                 <div className="relative w-full overflow-hidden rounded shadow aspect-video">
