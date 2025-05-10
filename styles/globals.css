@@ -3,28 +3,20 @@
 @tailwind utilities;
 
 @layer utilities {
-  .font-intro {
-    font-family: "Intro", sans-serif;
-  }
-
-  .font-intro-light {
-    font-family: "Intro Light", sans-serif;
-  }
-
-  .font-intro-bold {
-    font-family: "Intro Bold", sans-serif;
+  .font-nunito {
+    font-family: "Nunito", sans-serif;
   }
 
   .input {
-    @apply my-2 mx-1 text-base md:text-lg border-none rounded font-intro-bold text-sky-700 ring-1 ring-sky-700/20 focus:ring focus:ring-sky-600;
+    @apply my-2 mx-1 text-base md:text-lg border-none rounded font-nunito text-slate-700 ring-1 ring-slate-700/20 focus:ring focus:ring-slate-600;
   }
 
   .secondary-input {
-    @apply border-none rounded font-intro-bold text-gray-700 ring-1 ring-sky-700 focus:ring focus:ring-sky-600;
+    @apply border-none rounded font-nunito text-gray-700 ring-1 ring-slate-700 focus:ring focus:ring-slate-600;
   }
 
   .button {
-    @apply px-10 py-4 text-xl flex items-center justify-center md:text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-rose-800 to-indigo-800 font-intro-bold whitespace-nowrap;
+    @apply px-10 py-4 text-xl flex items-center justify-center md:text-2xl text-white transition-all rounded-full hover:-translate-y-px hover:shadow-lg shadow-pink-600/50 bg-gradient-to-br from-yellow-300 to-amber-800 font-nunito whitespace-nowrap;
   }
 
   .flex-center {
@@ -77,16 +69,6 @@
 }
 
 @font-face {
-  font-family: "Intro";
-  src: url("/fonts/Intro\ Book\ Regular.otf");
-}
-
-@font-face {
-  font-family: "Intro Light";
-  src: url("/fonts/Intro\ Light\ Regular.otf");
-}
-
-@font-face {
-  font-family: "Intro Bold";
-  src: url("/fonts/Intro\ Bold\ Regular.otf");
+  font-family: "Nunito";
+  src: url("/fonts/NunitoSans.ttf");
 }

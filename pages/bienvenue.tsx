@@ -49,14 +49,14 @@ const Page = ({
   }, [record]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100">
+    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-nunito from-slate-50 bg-gradient-to-br to-amber-50">
       <Head>
-        <title>Baby Bensarah</title>
+        <title>Baby #2</title>
         <link rel="icon" href="/favicon.png" />
         <meta name="robots" content="noindex" />
         {/* description and open graph */}
         <meta name="description" content="Une bonne nouvelle 🐣" />
-        <meta property="og:title" content="Baby Bensarah" />
+        <meta property="og:title" content="Baby #2" />
         <meta
           property="og:image"
           content="https://baby.bensarah.fr/og-image.png"
@@ -64,43 +64,43 @@ const Page = ({
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-sky-900 font-intro-bold">
+        <h1 className="mb-4 text-6xl text-slate-900 font-nunito">
           👋 Une bonne nouvelle
         </h1>
         {record && (
           <>
-            <p className="mb-2 text-sm text-sky-900">{`Notre bébé est arrivé ! Voilà ce que tu avais parié :`}</p>
+            <p className="mb-2 text-sm text-slate-900">{`Notre bébé est arrivé ! Voilà ce que tu avais parié :`}</p>
             <div className="mx-auto text-sm">
               <ResponseCard record={record} />
             </div>
           </>
         )}
         <ClientOnly>
-          <p className="py-8 text-2xl text-sky-900">
+          <p className="py-8 text-2xl text-slate-900">
             Nous avons{" "}
             {record?.Sexe &&
               (reveal.Sexe !== record.Sexe ? "en fait " : "en effet ")}
             accueilli{" "}
-            <strong className="font-intro-bold">
+            <strong className="font-nunito">
               {reveal.Sexe === "M"
                 ? "un petit garçon 👶🏻"
                 : "une petite fille 🐣"}
             </strong>{" "}
             ! {reveal.Sexe === "M" ? "Il" : "Elle"} pèse
-            <strong className="font-intro-bold">{` ${reveal.Poids} kg`}</strong>{" "}
+            <strong className="font-nunito">{` ${reveal.Poids} kg`}</strong>{" "}
             et mesure
-            <strong className="font-intro-bold">{` ${reveal.Taille} cm`}</strong>
+            <strong className="font-nunito">{` ${reveal.Taille} cm`}</strong>
             .
             <br />
             {reveal.Sexe === "M" ? "Il est né" : "Elle est née"} le{" "}
-            <strong className="font-intro-bold">
+            <strong className="font-nunito">
               {new Date(reveal.DateDeNaissance).toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "long",
               })}
             </strong>{" "}
             à{" "}
-            <strong className="font-intro-bold">
+            <strong className="font-nunito">
               {reveal.HeureDeNaissance}
             </strong>
             .
@@ -108,12 +108,12 @@ const Page = ({
 
           {!hasWon && (
             <div className="flex-col items-center justify-center w-full h-full">
-              <p className="mb-2 text-lg text-sky-900">
+              <p className="mb-2 text-lg text-slate-900">
                 Pour trouver{" "}
-                <strong className="font-intro-bold">son prénom</strong>, il
+                <strong className="font-nunito">son prénom</strong>, il
                 faudra résoudre ce puzzle ! 🧩
               </p>
-              <p className="mb-4 text-sm text-sky-900">
+              <p className="mb-4 text-sm text-slate-900">
                 Tape un prénom qui rentre dans la grille. Les lettres en rouge
                 🔴 sont bien placées, les lettres en orange 🔶 sont dans la
                 solution mais mal placées.
@@ -129,9 +129,9 @@ const Page = ({
 
           {hasWon && (
             <>
-              <p className="pb-8 text-2xl text-sky-900">
+              <p className="pb-8 text-2xl text-slate-900">
                 {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
-                <strong className="font-intro-bold">{reveal.Prénom}</strong> ❤️
+                <strong className="font-nunito">{reveal.Prénom}</strong> ❤️
                 et nous sommes comblés de bonheur !
               </p>
               <div className="relative w-full overflow-hidden rounded shadow aspect-video">
@@ -152,7 +152,7 @@ const Page = ({
               </p>
 
               <a
-                className="pt-8 text-lg underline text-sky-700 whitespace-nowrap underline-offset-2"
+                className="pt-8 text-lg underline text-slate-700 whitespace-nowrap underline-offset-2"
                 href="https://bientot9mois.fr/liste-naissance/ef1a218c-4a2f-4a91-b621-796ec909d7a4"
               >
                 Voir la liste de naissance
