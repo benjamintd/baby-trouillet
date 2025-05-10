@@ -172,7 +172,7 @@ const Home: NextPage = () => {
           </div>
           <div className="mb-12 flex flex-col   items-center w-full">
               <div className="flex flex-col items-center mt-6 w-[300px]">
-                <label htmlFor="Nom">Votre nom</label>
+                <label htmlFor="Nom" className='mb-2'>Votre nom</label>
                 <input
                   id="Nom"
                   className="w-full secondary-input"

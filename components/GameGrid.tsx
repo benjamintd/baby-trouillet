@@ -4,7 +4,6 @@ import GameRow, { CurrentGameRow } from "../components/GameRow";
 import {
   availableRowsAtom,
   currentWordAtom,
-  gameAtom,
   turnsAtom,
 } from "../core/atoms";
 

@@ -1,24 +1,39 @@
-import Airtable from "airtable";
+import ReactConfetti from "react-canvas-confetti";
 import { useAtom } from "jotai";
-import { RESET } from "jotai/utils";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ClientOnly from "../components/ClientOnly";
-import Confetti from "../components/Confetti";
-import ErrorDisplay from "../components/ErrorDisplay";
-import GameGrid from "../components/GameGrid";
-import GameInput from "../components/GameInput";
-import Keyboard from "../components/Keyboard";
-import ResponseCard from "../components/ResponseCard";
-import SendButton from "../components/SendButton";
-import { gameAtom, hasWonAtom, validWordsAtom } from "../core/atoms";
-import fr from "../lib/dictionnaries/fr";
-import normalizeString from "../lib/normalizeString";
+import { gameAtom, hasWonMotMeleAtom, validWordsAtom } from "../core/atoms";
 import { Submission } from "../models/Submission";
-import photo from "../public/photo.jpg";
+import photo from "../public/photobb2.png";
 import { hotjar } from "react-hotjar";
+import MotsMeles from "../components/MotsMeles";
+import { AnimatePresence, motion } from "motion/react";
+import colors from "tailwindcss/colors";
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const reveal: Submission = {
+    Nom: "",
+    Email: "",
+    Adresse: "",
+    Prénom: "Secret",
+    Sexe: "F",
+    Poids: 3.21,
+    Taille: 51,
+    Cheveux: "Duvet",
+    DateDeNaissance: new Date(2022, 5 - 1, 27).toISOString(),
+    HeureDeNaissance: "7:11",
+  };
+
+  return {
+    props: {
+      reveal,
+    },
+  };
+};
+
 const Page = ({
   record,
   reveal,
@@ -30,7 +45,18 @@ const Page = ({
 }) => {
   const [_, setValidWords] = useAtom(validWordsAtom);
   const [game, setGame] = useAtom(gameAtom);
-  const [hasWon] = useAtom(hasWonAtom);
+  const [hasWon] = useAtom(hasWonMotMeleAtom);
+
+  // delayedHasWon is used to switch the view after the confetti animation
+  const [delayedHasWon, setDelayedHasWon] = useState(false);
+  useEffect(() => {
+    if (hasWon) {
+      setTimeout(() => {
+        setDelayedHasWon(true);
+      }, 1500);
+    }
+  }, [hasWon]);
+
   useEffect(() => {
     setValidWords(possibleNames);
     if (game === null) {
@@ -63,37 +89,19 @@ const Page = ({
         />
       </Head>
 
-      <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-slate-900 font-nunito">
-          👋 Une bonne nouvelle
+      <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-3xl px-6 text-center md:px-12">
+        <h1 className="mb-4 text-4xl xl:text-5xl text-slate-900 font-nunito font-bold">
+          👋 La famille s'agrandit&nbsp;!
         </h1>
-        {record && (
-          <>
-            <p className="mb-2 text-sm text-slate-900">{`Notre bébé est arrivé ! Voilà ce que tu avais parié :`}</p>
-            <div className="mx-auto text-sm">
-              <ResponseCard record={record} />
-            </div>
-          </>
-        )}
         <ClientOnly>
-          <p className="py-8 text-2xl text-slate-900">
-            Nous avons{" "}
-            {record?.Sexe &&
-              (reveal.Sexe !== record.Sexe ? "en fait " : "en effet ")}
-            accueilli{" "}
-            <strong className="font-nunito">
-              {reveal.Sexe === "M"
-                ? "un petit garçon 👶🏻"
-                : "une petite fille 🐣"}
-            </strong>{" "}
-            ! {reveal.Sexe === "M" ? "Il" : "Elle"} pèse
-            <strong className="font-nunito">{` ${reveal.Poids} kg`}</strong>{" "}
+          <p className="py-8 text-2xl text-slate-900 text-balance">
+            Nous avons accueilli un nouveau membre dans la famille&nbsp;! C'est un
+            bébé qui pèse
+            <strong className="font-nunito font-bold">{` ${reveal.Poids} kg`}</strong>{" "}
             et mesure
-            <strong className="font-nunito">{` ${reveal.Taille} cm`}</strong>
-            .
-            <br />
-            {reveal.Sexe === "M" ? "Il est né" : "Elle est née"} le{" "}
-            <strong className="font-nunito">
+            <strong className="font-nunito font-bold">{` ${reveal.Taille} cm`}</strong>
+            , et qui a vu le jour le{" "}
+            <strong className="font-nunito font-bold">
               {new Date(reveal.DateDeNaissance).toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "long",
@@ -106,110 +114,94 @@ const Page = ({
             .
           </p>
 
-          {!hasWon && (
-            <div className="flex-col items-center justify-center w-full h-full">
-              <p className="mb-2 text-lg text-slate-900">
-                Pour trouver{" "}
-                <strong className="font-nunito">son prénom</strong>, il
-                faudra résoudre ce puzzle ! 🧩
-              </p>
-              <p className="mb-4 text-sm text-slate-900">
-                Tape un prénom qui rentre dans la grille. Les lettres en rouge
-                🔴 sont bien placées, les lettres en orange 🔶 sont dans la
-                solution mais mal placées.
-              </p>
-
-              <GameGrid />
-              <ErrorDisplay />
-              <GameInput />
-              <Keyboard />
-              <SendButton />
-            </div>
-          )}
-
-          {hasWon && (
-            <>
-              <p className="pb-8 text-2xl text-slate-900">
-                {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
-                <strong className="font-nunito">{reveal.Prénom}</strong> ❤️
-                et nous sommes comblés de bonheur !
-              </p>
-              <div className="relative w-full overflow-hidden rounded shadow aspect-video">
-                <Image
-                  layout="fill"
-                  objectFit="cover"
-                  src={photo}
-                  placeholder="blur"
-                />
-              </div>
-              <p className="mt-2 mb-8 text-gray-800 justify-self-end">
-                <button
-                  onClick={() => setGame(RESET)}
-                  className="border-b border-gray-800"
-                >
-                  Rejouer
-                </button>
-              </p>
-
-              <a
-                className="pt-8 text-lg underline text-slate-700 whitespace-nowrap underline-offset-2"
-                href="https://bientot9mois.fr/liste-naissance/ef1a218c-4a2f-4a91-b621-796ec909d7a4"
+          <AnimatePresence mode="wait">
+            {!delayedHasWon ? (
+              <motion.div
+                key="game"
+                initial={{ opacity: 1 }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.8,
+                  transition: {
+                    duration: 0.5,
+                  },
+                }}
+                className="flex-col items-center justify-center w-full h-full"
               >
-                Voir la liste de naissance
-              </a>
-            </>
-          )}
-        </ClientOnly>
+                <p className="mb-4 text-2xl text-slate-900 text-balance">
+                  Pour trouver{" "}
+                  <strong className="font-nunito font-bold">son prénom</strong>, il
+                  faudra chercher dans cette grille.
+                </p>
+                <p className="mb-4 text-slate-900 text-balance">
+                  Rayez les prénoms dans la grille (dans toutes les directions,
+                  diagonales également !). Vous saurez quand vous aurez trouvé
+                  le bon 😉.
+                </p>
 
-        <Confetti />
+                <MotsMeles
+                  bonusWord={reveal.Prénom.toUpperCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="reveal"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  scale: { type: "spring", damping: 15, stiffness: 100 },
+                }}
+              >
+                <p className="pb-8 text-2xl text-slate-900">
+                  {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
+                  <strong className="font-nunito font-bold">{reveal.Prénom}</strong>{" "}
+                  ❤️ et nous sommes comblés de bonheur !
+                </p>
+                <div className="relative w-full overflow-hidden rounded shadow aspect-video">
+                  <Image
+                    layout="fill"
+                    objectFit="cover"
+                    src={photo || "/placeholder.svg"}
+                    placeholder="blur"
+                    alt={`Photo de ${reveal.Prénom}`}
+                  />
+                </div>
+                <p className="mt-2 mb-8 text-gray-800 justify-self-end">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="border-b border-gray-800 hover:text-slate-700 hover:border-slate-700 transition-colors"
+                  >
+                    Rejouer
+                  </button>
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="fixed top-0 left-0 right-0 w-screen h-screen pointer-events-none">
+            <ReactConfetti
+              className="w-full h-full"
+              fire={hasWon}
+              colors={[
+                colors.rose[300],
+                colors.pink[200],
+                colors.slate[700],
+                colors.orange[500],
+              ]}
+              disableForReducedMotion={true}
+              resize={true}
+              useWorker={true}
+              scalar={1}
+              ticks={300}
+            />
+          </div>
+        </ClientOnly>
       </main>
     </div>
   );
 };
 
 export default Page;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const base = Airtable.base(process.env.AIRTABLE_BASE_ID!);
-  const { recordId } = context.req.cookies;
-
-  const reveal: Submission = {
-    Nom: "",
-    Email: "",
-    Adresse: "",
-    Prénom: "Andréa",
-    Sexe: "F",
-    Poids: 3.23,
-    Taille: 51,
-    Cheveux: "Duvet",
-    DateDeNaissance: new Date(2022, 11, 3).toISOString(),
-    HeureDeNaissance: "7:11",
-  };
-
-  const possibleNames = fr
-    .replace(/\n/g, " ")
-    .split(" ")
-    .map(normalizeString)
-    .filter((word) => {
-      return word.length === reveal.Prénom.length;
-    });
-
-  try {
-    const rec = await base.table("Pronos").find(recordId as string);
-
-    return {
-      props: {
-        record: JSON.parse(JSON.stringify(rec.fields)),
-        reveal,
-        possibleNames,
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        reveal,
-        possibleNames,
-      },
-    };
-  }
-};

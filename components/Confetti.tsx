@@ -2,16 +2,17 @@ import ReactConfetti from "react-canvas-confetti";
 import ClientOnly from "../components/ClientOnly";
 import colors from "tailwindcss/colors";
 import { useAtom } from "jotai";
-import { hasWonAtom } from "../core/atoms";
+import { hasWonAtom, hasWonMotMeleAtom } from "../core/atoms";
 
 const ConfettiCanvas = () => {
   const [hasWon] = useAtom(hasWonAtom);
+  const [hasWonMotMele] = useAtom(hasWonMotMeleAtom);
 
   return (
     <div className="fixed top-0 left-0 right-0 w-screen h-screen pointer-events-none">
       <ReactConfetti
         className="w-full h-full"
-        fire={hasWon}
+        fire={hasWon || hasWonMotMele}
         colors={[
           colors.rose[300],
           colors.pink[200],

@@ -56,19 +56,12 @@ const Page = ({ record }: { record: Submission }) => {
 
         <ResponseCard record={record} />
 
-        <p className="mt-2 text-gray-800 justify-self-end">
+        <p className="mt-8 text-gray-800 justify-self-end">
           Vous voulez changer votre pari ?{" "}
           <button onClick={replay} className="border-b border-gray-800">
             Rejouer
           </button>
         </p>
-
-        <a
-          className="mt-8 text-lg underline text-slate-700 whitespace-nowrap underline-offset-2"
-          href="https://bientot9mois.fr/liste-naissance/ef1a218c-4a2f-4a91-b621-796ec909d7a4"
-        >
-          Voir la liste de naissance
-        </a>
       </main>
     </div>
   );
