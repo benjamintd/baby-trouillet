@@ -20,16 +20,6 @@ const ResponseCard = ({ record }: { record: Submission }) => {
         </span>
         .
         <br />
-        {record.Sexe === "F" ? "Elle" : "Il"} aura une tête{" "}
-        <span className="text-sky-700 font-intro-bold">
-          {record.Cheveux === "Aucun"
-            ? "chauve"
-            : record.Cheveux === "Duvet"
-            ? "duveteuse"
-            : "chevelue"}
-        </span>
-        .
-        <br />
         {record.Sexe === "F" ? "Elle" : "Il"} naîtra le{" "}
         <span className="text-sky-700 font-intro-bold">
           {new Date(record.DateDeNaissance).toLocaleDateString("fr-FR", {

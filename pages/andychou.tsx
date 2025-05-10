@@ -150,13 +150,6 @@ const Page = ({
                   Rejouer
                 </button>
               </p>
-
-              <a
-                className="pt-8 text-lg underline text-sky-700 whitespace-nowrap underline-offset-2"
-                href="https://bientot9mois.fr/liste-naissance/ef1a218c-4a2f-4a91-b621-796ec909d7a4"
-              >
-                Voir la liste de naissance
-              </a>
             </>
           )}
         </ClientOnly>

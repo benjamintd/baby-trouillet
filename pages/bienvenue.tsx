@@ -18,8 +18,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Sarah",
-    Sexe: "F",
+    Prénom: "Dorian",
+    Sexe: "M",
     Poids: 3.21,
     Taille: 51,
     Cheveux: "Duvet",
@@ -75,7 +75,7 @@ const Page = ({
   }, [record]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-rose-50 bg-gradient-to-br to-indigo-100">
+    <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-intro from-slate-50 bg-gradient-to-br to-amber-50">
       <Head>
         <title>Baby Bensarah</title>
         <link rel="icon" href="/favicon.png" />
@@ -90,11 +90,11 @@ const Page = ({
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-3xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-4xl xl:text-5xl text-sky-900 font-intro-bold">
+        <h1 className="mb-4 text-4xl xl:text-5xl text-slate-900 font-intro-bold">
           👋 La famille s'agrandit&nbsp;!
         </h1>
         <ClientOnly>
-          <p className="py-8 text-2xl text-sky-900">
+          <p className="py-8 text-2xl text-slate-900">
             Nous avons accueilli un nouveau membre dans la famille ! C'est un
             beau bébé qui pèse
             <strong className="font-intro-bold">{` ${reveal.Poids} kg`}</strong>{" "}
@@ -128,12 +128,12 @@ const Page = ({
                 }}
                 className="flex-col items-center justify-center w-full h-full"
               >
-                <p className="mb-2 text-2xl text-sky-900">
+                <p className="mb-2 text-2xl text-slate-900">
                   Pour trouver{" "}
                   <strong className="font-intro-bold">son prénom</strong>, il
                   faudra chercher dans cette grille 🧩
                 </p>
-                <p className="mb-4 text-sky-900">
+                <p className="mb-4 text-slate-900">
                   Rayez les prénoms dans la grille (dans toutes les directions,
                   diagonales également !). Vous saurez quand vous aurez trouvé
                   le bon 😉.
@@ -155,7 +155,7 @@ const Page = ({
                   scale: { type: "spring", damping: 15, stiffness: 100 },
                 }}
               >
-                <p className="pb-8 text-2xl text-sky-900">
+                <p className="pb-8 text-2xl text-slate-900">
                   {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
                   <strong className="font-intro-bold">{reveal.Prénom}</strong>{" "}
                   ❤️ et nous sommes comblés de bonheur !
@@ -172,7 +172,7 @@ const Page = ({
                 <p className="mt-2 mb-8 text-gray-800 justify-self-end">
                   <button
                     onClick={() => window.location.reload()}
-                    className="border-b border-gray-800 hover:text-sky-700 hover:border-sky-700 transition-colors"
+                    className="border-b border-gray-800 hover:text-slate-700 hover:border-slate-700 transition-colors"
                   >
                     Rejouer
                   </button>
@@ -188,7 +188,7 @@ const Page = ({
               colors={[
                 colors.rose[300],
                 colors.pink[200],
-                colors.sky[700],
+                colors.slate[700],
                 colors.orange[500],
               ]}
               disableForReducedMotion={true}

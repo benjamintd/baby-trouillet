@@ -15,7 +15,6 @@ const DIRECTIONS: Direction[] = [
   [0, 1], // right
   [1, 0], // down
   [1, 1], // diagonal down-right
-  [-1, 1], // diagonal up-right
 ]
 
 // Sample word list - can be customized
@@ -170,7 +169,7 @@ const WORD_LIST = uniq(sortBy([
   "ZOE"
 ], s => -(s.length + 30 * rng()))) // bias towards longer words first with some randomness
 
-const GRID_SIZE: [number, number] = [12, 9]
+const GRID_SIZE: [number, number] = [10, 9]
 const [gridRows, gridCols] = GRID_SIZE
 
 export default function MotsMeles({ bonusWord }: { bonusWord: string }) {
