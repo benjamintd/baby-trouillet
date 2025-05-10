@@ -256,7 +256,7 @@ const Home: NextPage = () => {
   );
 };
 
-{* redirect to /bienvenue on load
+/* redirect to /bienvenue on load
 // export const getServerSideProps: // GetServerSideProps = async () => {
   return {
     redirect: {
@@ -264,6 +264,7 @@ const Home: NextPage = () => {
       permanent: true,
     },
   };
-}; *}
+}; 
+*/
 
 export default Home;
