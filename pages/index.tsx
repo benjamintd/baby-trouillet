@@ -256,14 +256,14 @@ const Home: NextPage = () => {
   );
 };
 
-// redirect to /bienvenue on load
-export const getServerSideProps: GetServerSideProps = async () => {
+{* redirect to /bienvenue on load
+// export const getServerSideProps: // GetServerSideProps = async () => {
   return {
     redirect: {
       destination: "/bienvenue",
       permanent: true,
     },
   };
-};
+}; *}
 
 export default Home;
