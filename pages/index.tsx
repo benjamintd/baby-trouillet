@@ -13,6 +13,7 @@ const Home: NextPage = () => {
   >("idle");
   const [formState, setFormState] = useState<Partial<Submission>>({
     DateDeNaissance: "2025-06-02",
+    HeureDeNaissance: "00:00",
   });
   const [recordId, setRecordId] = useCookie("recordId");
 
@@ -165,6 +166,7 @@ const Home: NextPage = () => {
                   name="HeureDeNaissance"
                   min="00:00"
                   max="24:00"
+                  defaultValue={"00:00"}
                 />
                 .
               </span>
@@ -202,7 +204,7 @@ const Home: NextPage = () => {
               : status === "error"
               ? "Erreur 🙃"
               : status === "success"
-              ? "Envoyé ✨"
+              ? "Envoyé ✅"
               : "Envoyer"}
           </button>
         </form>
