@@ -13,6 +13,8 @@ import MotsMeles from "../components/MotsMeles";
 import { AnimatePresence, motion } from "motion/react";
 import colors from "tailwindcss/colors";
 
+
+// don't forget to change photobb2.png and this data at birth-time. 
 export const getServerSideProps: GetServerSideProps = async () => {
   const reveal: Submission = {
     Nom: "",
