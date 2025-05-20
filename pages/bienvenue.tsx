@@ -7,24 +7,26 @@ import { useEffect, useState } from "react";
 import ClientOnly from "../components/ClientOnly";
 import { gameAtom, hasWonMotMeleAtom, validWordsAtom } from "../core/atoms";
 import { Submission } from "../models/Submission";
-import photo from "../public/photobb2.png";
+import photo from "../public/dorian.jpeg";
 import { hotjar } from "react-hotjar";
 import MotsMeles from "../components/MotsMeles";
 import { AnimatePresence, motion } from "motion/react";
 import colors from "tailwindcss/colors";
 
+
+// don't forget to change photobb2.png and this data at birth-time. 
 export const getServerSideProps: GetServerSideProps = async () => {
   const reveal: Submission = {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Secret",
-    Sexe: "F",
-    Poids: 3.21,
-    Taille: 51,
+    Prénom: "Dorian",
+    Sexe: "M",
+    Poids: 3.00,
+    Taille: 50,
     Cheveux: "Duvet",
-    DateDeNaissance: new Date(2022, 5 - 1, 27).toISOString(),
-    HeureDeNaissance: "7:11",
+    DateDeNaissance: new Date(2022, 5 - 1, 20).toISOString(),
+    HeureDeNaissance: "2:11",
   };
 
   return {
