@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import ClientOnly from "../components/ClientOnly";
 import { gameAtom, hasWonMotMeleAtom, validWordsAtom } from "../core/atoms";
 import { Submission } from "../models/Submission";
-import photo from "../public/photobb2.png";
+import photo from "../public/dorian.jpeg";
 import { hotjar } from "react-hotjar";
 import MotsMeles from "../components/MotsMeles";
 import { AnimatePresence, motion } from "motion/react";
