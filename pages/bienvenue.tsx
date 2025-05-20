@@ -20,13 +20,13 @@ export const getServerSideProps: GetServerSideProps = async () => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Secret",
-    Sexe: "F",
-    Poids: 3.21,
-    Taille: 51,
+    Prénom: "Dorian",
+    Sexe: "M",
+    Poids: 3.00,
+    Taille: 50,
     Cheveux: "Duvet",
-    DateDeNaissance: new Date(2022, 5 - 1, 27).toISOString(),
-    HeureDeNaissance: "7:11",
+    DateDeNaissance: new Date(2022, 5 - 1, 20).toISOString(),
+    HeureDeNaissance: "2:11",
   };
 
   return {
