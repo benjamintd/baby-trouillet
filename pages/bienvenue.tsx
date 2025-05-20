@@ -93,11 +93,11 @@ const Page = ({
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-3xl px-6 text-center md:px-12">
         <h1 className="mb-4 text-4xl xl:text-5xl text-slate-900 font-nunito font-bold">
-          👋 La famille s'agrandit&nbsp;!
+          👋 La famille s'est agrandie&nbsp;!
         </h1>
         <ClientOnly>
           <p className="py-8 text-2xl text-slate-900 text-balance">
-            Nous avons accueilli un nouveau membre dans la famille&nbsp;! C'est un
+            Nous avons accueilli un nouveau membre dans la famille&nbsp;! C'est un beau
             bébé qui pèse
             <strong className="font-nunito font-bold">{` ${reveal.Poids} kg`}</strong>{" "}
             et mesure
@@ -162,7 +162,7 @@ const Page = ({
                   <strong className="font-nunito font-bold">{reveal.Prénom}</strong>{" "}
                   ❤️ et nous sommes comblés de bonheur !
                 </p>
-                <div className="relative w-full overflow-hidden rounded shadow aspect-video">
+                <div className="relative w-full overflow-hidden rounded shadow aspect-[9/16] max-w-md mx-auto">
                   <Image
                     layout="fill"
                     objectFit="cover"
