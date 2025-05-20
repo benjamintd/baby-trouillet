@@ -19895,7 +19895,6 @@ doreen
 dorene
 doress
 dorette
-doria
 doriana
 dorianna
 dorianne

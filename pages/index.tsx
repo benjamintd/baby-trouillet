@@ -1,61 +1,82 @@
-import type { GetServerSideProps, NextPage } from "next";
+import ReactConfetti from "react-canvas-confetti";
+import { useAtom } from "jotai";
+import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import ClientOnly from "../components/ClientOnly";
+import { gameAtom, hasWonMotMeleAtom, validWordsAtom } from "../core/atoms";
 import { Submission } from "../models/Submission";
-import { useCookie } from "react-use";
-import LoadingDots from "../components/LoadingDots";
-import classNames from "classnames";
+import { hotjar } from "react-hotjar";
+import MotsMeles from "../components/MotsMeles";
+import { AnimatePresence, motion } from "motion/react";
+import colors from "tailwindcss/colors";
 
-const Home: NextPage = () => {
-  const [status, setStatus] = useState<
-    "idle" | "submitting" | "error" | "success"
-  >("idle");
-  const [formState, setFormState] = useState<Partial<Submission>>({
-    DateDeNaissance: "2025-06-02",
-    HeureDeNaissance: "00:00",
-  });
-  const [recordId, setRecordId] = useCookie("recordId");
+// get a link to your image on https://postimg.cc/
+// Direct link to your image, e.g. https://i.postimg.cc/4xkJTF1p/Screenshot-2025-05-13-at-16-44-52.png
+const photo = "https://picsum.photos/300/400";
 
-  const router = useRouter();
+// don't forget to change picture and this data when you have a baby
+export const getServerSideProps: GetServerSideProps = async () => {
+  const reveal = {
+    Nom: "",
+    Email: "",
+    Adresse: "",
+    Prénom: "Secret",
+    Sexe: "M",
+    Poids: "3,00",
+    Taille: "50",
+    Cheveux: "Duvet",
+    DateDeNaissance: "20 mai",
+    HeureDeNaissance: "2:11",
+  };
+
+  return {
+    props: {
+      reveal,
+    },
+  };
+};
+
+const Page = ({
+  record,
+  reveal,
+  possibleNames,
+}: {
+  record: Submission;
+  reveal: Submission;
+  possibleNames: string[];
+}) => {
+  const [_, setValidWords] = useAtom(validWordsAtom);
+  const [game, setGame] = useAtom(gameAtom);
+  const [hasWon] = useAtom(hasWonMotMeleAtom);
+
+  // delayedHasWon is used to switch the view after the confetti animation
+  const [delayedHasWon, setDelayedHasWon] = useState(false);
+  useEffect(() => {
+    if (hasWon) {
+      setTimeout(() => {
+        setDelayedHasWon(true);
+      }, 1500);
+    }
+  }, [hasWon]);
 
   useEffect(() => {
-    if (recordId) {
-      router.replace(`/${recordId}`);
-    }
-  });
-
-  const handleInputChange = (event: any) => {
-    const target = event.target;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    const name = target.name;
-
-    setFormState((state) => ({
-      ...state,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-
-    setStatus("submitting");
-    fetch("/api/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formState),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setStatus("success");
-        setRecordId(data.id, { sameSite: "lax", expires: 365 });
-      })
-      .catch(() => {
-        setStatus("error");
+    setValidWords(possibleNames);
+    if (game === null) {
+      setGame({
+        word: reveal.Prénom,
+        turns: [],
       });
-  };
+    }
+  }, [game]);
+
+  useEffect(() => {
+    if (hotjar.initialized() && record?.Email) {
+      // Identify the user
+      hotjar.identify("USER_ID", { userProperty: record.Email });
+    }
+  }, [record]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-nunito from-slate-50 bg-gradient-to-br to-amber-50">
@@ -64,10 +85,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.png" />
         <meta name="robots" content="noindex" />
         {/* description and open graph */}
-        <meta
-          name="description"
-          content="Pronostics pour le bébé Tran Mamy 🐣"
-        />
+        <meta name="description" content="Une bonne nouvelle 🐣" />
         <meta property="og:title" content="Baby #2" />
         <meta
           property="og:image"
@@ -75,152 +93,114 @@ const Home: NextPage = () => {
         />
       </Head>
 
-      <main className="flex flex-col items-center justify-center flex-1 w-full max-w-4xl px-6 text-center md:px-12">
-        <h1 className="mb-4 text-6xl text-slate-900 font-nunito font-bold">
-          Baby #2
+      <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-3xl px-6 text-center md:px-12">
+        <h1 className="mb-4 text-4xl xl:text-5xl text-slate-900 font-nunito font-bold">
+          👋 La famille s'est agrandie&nbsp;!
         </h1>
+        <ClientOnly>
+          <p className="py-8 text-2xl text-slate-900 text-balance">
+            Nous avons accueilli un nouveau membre dans la famille&nbsp;! C'est un beau
+            bébé qui pèse
+            <strong className="font-nunito font-bold">{` ${reveal.Poids} kg`}</strong>{" "}
+            et mesure
+            <strong className="font-nunito font-bold">{` ${reveal.Taille} cm`}</strong>
+            , et qui a vu le jour le{" "}
+            <strong className="font-nunito font-bold">
+              {reveal.DateDeNaissance}
+            </strong>{" "}
+            à{" "}
+            <strong className="font-nunito">
+              {reveal.HeureDeNaissance}
+            </strong>
+            .
+          </p>
 
-        <p className="mb-8 text-lg text-slate-900 text-balance">
-          Nous attendons avec impatience la naissance de notre bébé. Vous l'attendiez, voilà un petit formulaire de pronostics&nbsp;!
-          <br />À la clé, une bouteille de champagne et une rencontre
-          exclusive avec l'enfant 🤗.
-        </p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="w-full max-w-5xl p-6 text-base font-bold text-left text-gray-900 bg-white border rounded shadow md:text-lg shadow-teal-900/20">
-            <p className="mb-4">
-              Je pense que le bébé sera{" "}
-              <select
-                onChange={handleInputChange}
-                className="input"
-                name="Sexe"
-                id="Sexe"
+          <AnimatePresence mode="wait">
+            {!delayedHasWon ? (
+              <motion.div
+                key="game"
+                initial={{ opacity: 1 }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.8,
+                  transition: {
+                    duration: 0.5,
+                  },
+                }}
+                className="flex-col items-center justify-center w-full h-full"
               >
-                <option value="" disabled selected>
-                  choisir...
-                </option>
-                <option value="M">un petit garçon</option>
-                <option value="F">une petite fille</option>
-              </select>{" "}
-              qui s'appellera{" "}
-              <input
-                className="w-40 input"
-                required
-                type="text"
-                placeholder="Prénom"
-                name="Prénom"
-                autoComplete="off"
-                onChange={handleInputChange}
-              />
-              .
-            </p>
-            <p className="mb-4">
-              {formState.Sexe === "F" ? "Elle" : "Il"} pèsera{" "}
-              <input
-                className="w-24 input"
-                required
-                type="number"
-                placeholder="Poids"
-                name="Poids"
-                min={0.0}
-                step={0.01}
-                lang="fr"
-                max={10.0}
-                onChange={handleInputChange}
-              />{" "}
-              kilos et mesurera{" "}
-              <input
-                lang="fr"
-                className="w-24 input"
-                required
-                type="number"
-                placeholder="Taille"
-                name="Taille"
-                min={0}
-                step={1}
-                max={100}
-                onChange={handleInputChange}
-              />{" "}
-              centimètres.
-            </p>
-            <p className="mb-4">
-              {formState.Sexe === "F" ? "Elle" : "Il"} naîtra le
-              <span className="text-left">
-                <input
-                  className="input"
-                  type="date"
-                  required
-                  onChange={handleInputChange}
-                  name="DateDeNaissance"
-                  defaultValue="2025-06-02"
-                  min="2025-05-10"
-                  max="2025-06-10"
-                />{" "}
-                à{" "}
-                <input
-                  onChange={handleInputChange}
-                  className="input"
-                  required
-                  type="time"
-                  id="HeureDeNaissance"
-                  name="HeureDeNaissance"
-                  min="00:00"
-                  max="24:00"
-                  defaultValue={"00:00"}
-                />
-                .
-              </span>
-            </p>
-          </div>
-          <div className="mb-12 flex flex-col   items-center w-full">
-              <div className="flex flex-col items-center mt-6 w-[300px]">
-                <label htmlFor="Nom" className='mb-2'>Votre nom</label>
-                <input
-                  id="Nom"
-                  className="w-full secondary-input"
-                  type="text"
-                  placeholder="Nom"
-                  name="Nom"
-                  autoComplete="name"
-                  onChange={handleInputChange}
-                  required
-                />
+                <p className="mb-4 text-2xl text-slate-900 text-balance">
+                  Pour trouver{" "}
+                  <strong className="font-nunito font-bold">son prénom</strong>, il
+                  faudra chercher dans cette grille.
+                </p>
+                <p className="mb-4 text-slate-900 text-balance">
+                  Rayez les prénoms dans la grille (dans toutes les directions,
+                  diagonales également !). Vous saurez quand vous aurez trouvé
+                  le bon 😉.
+                </p>
 
-            </div>
-          </div>
-
-          <button
-            className={classNames("mx-auto button text-center", {
-              "!text-transparent": status === "submitting",
-            })}
-            disabled={status === "submitting"}
-            type="submit"
-          >
-            {status === "submitting" && (
-              <LoadingDots className="absolute text-white" />
+                <MotsMeles
+                  bonusWord={reveal.Prénom.toUpperCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="reveal"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  scale: { type: "spring", damping: 15, stiffness: 100 },
+                }}
+              >
+                <p className="pb-8 text-2xl text-slate-900">
+                  {reveal.Sexe === "M" ? "Il" : "Elle"} s'appelle{" "}
+                  <strong className="font-nunito font-bold">{reveal.Prénom}</strong>{" "}
+                  ❤️ et nous sommes comblés de bonheur !
+                </p>
+                <div className="relative w-full overflow-hidden rounded shadow max-w-md mx-auto">
+                  <img
+                    className="object-cover w-full h-full"
+                    src={photo || "/placeholder.svg"}
+                    alt={`Photo de ${reveal.Prénom}`}
+                  />
+                </div>
+                <p className="mt-2 mb-8 text-gray-800 justify-self-end">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="border-b border-gray-800 hover:text-slate-700 hover:border-slate-700 transition-colors"
+                  >
+                    Rejouer
+                  </button>
+                </p>
+              </motion.div>
             )}
-            {status === "idle" || status === "submitting"
-              ? "Envoyer"
-              : status === "error"
-              ? "Erreur 🙃"
-              : status === "success"
-              ? "Envoyé ✅"
-              : "Envoyer"}
-          </button>
-        </form>
+          </AnimatePresence>
+
+          <div className="fixed top-0 left-0 right-0 w-screen h-screen pointer-events-none">
+            <ReactConfetti
+              className="w-full h-full"
+              fire={hasWon}
+              colors={[
+                colors.rose[300],
+                colors.pink[200],
+                colors.slate[700],
+                colors.orange[500],
+              ]}
+              disableForReducedMotion={true}
+              resize={true}
+              useWorker={true}
+              scalar={1}
+              ticks={300}
+            />
+          </div>
+        </ClientOnly>
       </main>
     </div>
   );
 };
 
-// redirect to /bienvenue on load
-export const getServerSideProps: GetServerSideProps = async () => {
-  return {
-    redirect: {
-      destination: "/bienvenue",
-      permanent: true,
-    },
-  };
-}; 
-
-export default Home;
+export default Page;
