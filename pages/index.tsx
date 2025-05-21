@@ -2,7 +2,6 @@ import ReactConfetti from "react-canvas-confetti";
 import { useAtom } from "jotai";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import ClientOnly from "../components/ClientOnly";
 import { gameAtom, hasWonMotMeleAtom, validWordsAtom } from "../core/atoms";
@@ -14,7 +13,6 @@ import colors from "tailwindcss/colors";
 
 // get a link to your image on https://postimg.cc/
 // Direct link to your image, e.g. https://i.postimg.cc/4xkJTF1p/Screenshot-2025-05-13-at-16-44-52.png
-const photo = process.env.PHOTO; // "https://picsum.photos/300/400";
 
 // don't forget to change picture and this data when you have a baby
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -23,11 +21,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
     Email: "",
     Adresse: "",
     Prénom: process.env.PRENOM,
-    Sexe: "M",
+    Sexe: "F",
     Poids: process.env.POIDS_KGS,
     Taille: process.env.TAILLE_CMS,
     DateDeNaissance: process.env.DATE,
     HeureDeNaissance: process.env.HEURE,
+    photo: process.env.PHOTO
   };
 
   return {
@@ -38,11 +37,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 const Page = ({
-  record,
   reveal,
   possibleNames,
 }: {
-  record: Submission;
   reveal: Submission;
   possibleNames: string[];
 }) => {
@@ -70,13 +67,6 @@ const Page = ({
     }
   }, [game]);
 
-  useEffect(() => {
-    if (hotjar.initialized() && record?.Email) {
-      // Identify the user
-      hotjar.identify("USER_ID", { userProperty: record.Email });
-    }
-  }, [record]);
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-24 transition-all duration-200 font-nunito from-slate-50 bg-gradient-to-br to-amber-50">
       <Head>
@@ -88,7 +78,7 @@ const Page = ({
         <meta property="og:title" content="Baby #2" />
         <meta
           property="og:image"
-          content="https://baby.bensarah.fr/og-image.png"
+          content="https://baby-trouillet.vercel.app/mater.jpg"
         />
       </Head>
 
@@ -163,7 +153,7 @@ const Page = ({
                 <div className="relative w-full overflow-hidden rounded shadow max-w-md mx-auto">
                   <img
                     className="object-cover w-full h-full"
-                    src={photo || "/placeholder.svg"}
+                    src={reveal.photo || "/placeholder.svg"}
                     alt={`Photo de ${reveal.Prénom}`}
                   />
                 </div>

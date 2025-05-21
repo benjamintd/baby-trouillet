@@ -9,4 +9,5 @@ export interface Submission {
   Cheveux: string;
   DateDeNaissance: string;
   HeureDeNaissance: string;
+  photo: string;
 }
