@@ -76,10 +76,6 @@ const Page = ({
         {/* description and open graph */}
         <meta name="description" content="Une bonne nouvelle 🐣" />
         <meta property="og:title" content="Baby #2" />
-        <meta
-          property="og:image"
-          content="https://baby-trouillet.vercel.app/mater.jpg"
-        />
       </Head>
 
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full max-w-3xl px-6 text-center md:px-12">
