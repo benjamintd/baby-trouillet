@@ -14,7 +14,7 @@ import colors from "tailwindcss/colors";
 
 // get a link to your image on https://postimg.cc/
 // Direct link to your image, e.g. https://i.postimg.cc/4xkJTF1p/Screenshot-2025-05-13-at-16-44-52.png
-const photo = "https://picsum.photos/300/400";
+const photo = process.env.PHOTO; // "https://picsum.photos/300/400";
 
 // don't forget to change picture and this data when you have a baby
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -22,13 +22,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
     Nom: "",
     Email: "",
     Adresse: "",
-    Prénom: "Secret",
+    Prénom: process.env.PRENOM,
     Sexe: "M",
-    Poids: "3,00",
-    Taille: "50",
-    Cheveux: "Duvet",
-    DateDeNaissance: "20 mai",
-    HeureDeNaissance: "2:11",
+    Poids: process.env.POIDS_KGS,
+    Taille: process.env.TAILLE_CMS,
+    DateDeNaissance: process.env.DATE,
+    HeureDeNaissance: process.env.HEURE,
   };
 
   return {
